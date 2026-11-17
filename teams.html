@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="kk" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="google" content="notranslate">
+<title>Командаңды тап — Ой бәйгесі</title>
+
+<style>
+*{box-sizing:border-box}
+
+:root{
+  --gold:#ffdb8a;
+  --cyan:#68e7ff;
+  --purple:#d499ff;
+  --cream:#fff2d7;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  min-height:100svh;
+  color:var(--cream);
+  font-family:"Segoe UI",Arial,sans-serif;
+  background:
+    linear-gradient(#04112633,#04112688),
+    url("portal.png") center/cover fixed no-repeat;
+  background-color:#06152c;
+}
+
+button,input{font:inherit}
+button{cursor:pointer}
+button:disabled{opacity:.4;cursor:default}
+
+button:focus-visible,
+input:focus-visible,
+a:focus-visible{
+  outline:3px solid white;
+  outline-offset:4px;
+}
+
+main{
+  width:min(1180px,94%);
+  margin:auto;
+  padding:22px 0;
+}
+
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  flex-wrap:wrap;
+}
+
+.brand{
+  color:var(--gold);
+  text-decoration:none;
+  font-weight:800;
+  letter-spacing:2px;
+}
+
+h1{
+  margin:0;
+  color:var(--gold);
+  font-family:Georgia,serif;
+  font-size:clamp(25px,4vw,48px);
+  text-align:center;
+  text-shadow:0 3px 12px #000;
+}
+
+.subtitle{
+  text-align:center;
+  color:#e5cfaa;
+  margin:12px 0 23px;
+  line-height:1.7;
+  text-shadow:0 2px 8px #000;
+}
+
+.toolbar{
+  display:flex;
+  gap:8px;
+}
+
+.ghost{
+  padding:10px 13px;
+  border:1px solid #d6af6c88;
+  color:var(--gold);
+  background:#07172eee;
+  border-radius:10px;
+  font-size:12px;
+}
+
+.setup{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:13px;
+  flex-wrap:wrap;
+  padding:15px 20px;
+  margin:auto;
+  width:fit-content;
+  max-width:100%;
+  background:linear-gradient(135deg,#142d4bf5,#071329f5);
+  border:1px solid #d6af6c88;
+  border-radius:15px;
+}
+
+.setup label{
+  font-size:14px;
+  color:#f5dfb5;
+}
+
+input{
+  width:82px;
+  padding:9px;
+  border-radius:9px;
+  border:1px solid #dfbd7d;
+  background:#07172e;
+  color:#fff0cd;
+  text-align:center;
+}
+
+#progress{
+  font-size:13px;
+  color:#f4d9a9;
+}
+
+.portal-area{
+  text-align:center;
+  margin:22px 0;
+}
+
+.portal{
+  --accent:#ffdb8a;
+  position:relative;
+  width:280px;
+  height:280px;
+  margin:auto;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:radial-gradient(
+    circle,#17456699 0%,#07152dee 62%,transparent 72%
+  );
+  box-shadow:0 0 55px #5a8dff33;
+}
+
+.ring{
+  position:absolute;
+  border-radius:50%;
+  border:3px solid transparent;
+  pointer-events:none;
+}
+
+.ring.one{
+  inset:0;
+  border-top-color:var(--gold);
+  border-bottom-color:var(--gold);
+  animation:spin 14s linear infinite;
+}
+
+.ring.two{
+  inset:12px;
+  border-left-color:var(--cyan);
+  border-right-color:var(--cyan);
+  animation:spin 10s linear infinite reverse;
+}
+
+.ring.three{
+  inset:25px;
+  border-top-color:var(--purple);
+  border-bottom-color:var(--purple);
+  animation:spin 8s linear infinite;
+}
+
+.scanning .ring.one{animation-duration:.9s}
+.scanning .ring.two{animation-duration:.65s}
+.scanning .ring.three{animation-duration:.5s}
+
+.portal.revealed{
+  box-shadow:0 0 65px color-mix(
+    in srgb,var(--accent) 40%,transparent
+  );
+}
+
+.portal-core{
+  position:relative;
+  z-index:1;
+  width:66%;
+  pointer-events:none;
+}
+
+#portalIcon{
+  height:125px;
+  display:grid;
+  place-items:center;
+}
+
+#portalIcon svg{
+  width:125px;
+  height:125px;
+  filter:drop-shadow(0 0 13px var(--accent));
+}
+
+#portalName{
+  min-height:30px;
+  font-size:24px;
+  font-weight:800;
+  letter-spacing:2px;
+  color:var(--accent);
+  margin-top:10px;
+}
+
+.neutral{
+  font-size:65px;
+  color:#ffdd92;
+  text-shadow:0 0 30px #ffc350;
+}
+
+#message{
+  min-height:48px;
+  max-width:650px;
+  margin:15px auto 12px;
+  color:#f6dfb9;
+  font-size:16px;
+  line-height:1.6;
+  text-shadow:0 2px 10px #000;
+}
+
+.primary{
+  padding:15px 27px;
+  border-radius:13px;
+  border:1px solid #fff0bd;
+  color:#39200b;
+  font-size:19px;
+  font-weight:800;
+  background:linear-gradient(135deg,#fff0b8,#f1c466,#d89b38);
+  box-shadow:0 4px 0 #7c4e1c,0 10px 25px #0005;
+  transition:transform .2s;
+}
+
+.primary:hover:not(:disabled){
+  transform:translateY(-2px);
+}
+
+.teams{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:15px;
+  margin-top:25px;
+}
+
+.card{
+  --accent:var(--gold);
+  border:1px solid var(--accent);
+  border-radius:18px;
+  padding:18px;
+  background:linear-gradient(135deg,#142c47f5,#07142bf5);
+  transition:box-shadow .3s,transform .3s;
+}
+
+.card:nth-child(2){--accent:var(--cyan)}
+.card:nth-child(3){--accent:var(--purple)}
+
+.card.active{
+  transform:translateY(-5px);
+  box-shadow:0 0 27px color-mix(
+    in srgb,var(--accent) 45%,transparent
+  );
+}
+
+.identity{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.emblem{
+  width:70px;
+  height:70px;
+  flex-shrink:0;
+}
+
+.emblem svg{
+  width:100%;
+  height:100%;
+}
+
+.card h2{
+  font-size:19px;
+  color:var(--accent);
+  margin:0 0 7px;
+  letter-spacing:1px;
+}
+
+.counter{
+  font-size:24px;
+  font-weight:800;
+}
+
+.counter small{
+  color:#b8c2cf;
+  font-size:16px;
+  font-weight:400;
+}
+
+.dots{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:16px;
+}
+
+.dot{
+  width:11px;
+  height:11px;
+  border-radius:50%;
+  background:#64708688;
+  border:1px solid #d2dded22;
+}
+
+.dot.lit{
+  background:var(--accent);
+  box-shadow:0 0 12px var(--accent);
+}
+
+footer{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:24px;
+  padding:16px 0;
+}
+
+footer a{
+  color:var(--gold);
+  font-size:14px;
+}
+
+.finish{
+  padding:12px 18px;
+  border-radius:11px;
+  border:1px solid #ffe4aa;
+  color:#ffe2a7;
+  background:#0c1d34f5;
+  font-weight:800;
+}
+
+.note{
+  text-align:center;
+  color:#d1c3a8;
+  font-size:11px;
+  line-height:1.8;
+  text-shadow:0 2px 8px #000;
+}
+
+dialog{
+  width:min(650px,93vw);
+  padding:25px;
+  border:1px solid #e6c078;
+  border-radius:20px;
+  background:#081a32;
+  color:#fff0d0;
+  line-height:1.7;
+}
+
+dialog::backdrop{
+  background:#000b;
+  backdrop-filter:blur(6px);
+}
+
+dialog h2{
+  color:var(--gold);
+  margin-top:0;
+}
+
+.summary{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin:22px 0;
+}
+
+.summary div{
+  padding:15px 8px;
+  text-align:center;
+  border:1px solid #d0ae6a77;
+  border-radius:12px;
+}
+
+.summary b{
+  display:block;
+  font-size:30px;
+  color:var(--gold);
+}
+
+.dialog-controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+#warning{
+  background:#542e1b;
+  padding:12px;
+  border-radius:10px;
+  text-align:center;
+  margin-bottom:15px;
+  color:#ffe4ac;
+  line-height:1.6;
+}
+
+[hidden]{display:none!important}
+
+@keyframes spin{
+  to{transform:rotate(360deg)}
+}
+
+@media(max-width:700px){
+  main{padding-top:16px}
+  header{justify-content:center}
+  header h1{width:100%;order:3;margin-top:8px}
+  .subtitle{font-size:13px}
+  .portal{width:235px;height:235px}
+  #portalIcon{height:100px}
+  #portalIcon svg{width:100px;height:100px}
+  #portalName{font-size:20px}
+  .teams{gap:7px}
+  .card{padding:13px 8px}
+  .identity{flex-direction:column;text-align:center;gap:7px}
+  .emblem{width:50px;height:50px}
+  .card h2{font-size:12px}
+  .counter{font-size:22px}
+  .dots{justify-content:center;gap:5px}
+  .dot{width:8px;height:8px}
+  footer{justify-content:center}
+  .summary{font-size:11px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+
+<body>
+<main>
+  <div id="warning" role="status" hidden></div>
+
+  <header>
+    <a class="brand" href="index.html">ОЙ БӘЙГЕСІ</a>
+
+    <h1>КОМАНДАҢДЫ ТАП</h1>
+
+    <div class="toolbar">
+      <button class="ghost" id="sound" aria-pressed="false">
+        ♫ Дыбыс: өшірулі
+      </button>
+      <button class="ghost" id="fullscreen"
+              aria-label="Толық экран">⛶</button>
+    </div>
+  </header>
+
+  <p class="subtitle">
+    Бір сахна. Үш команда. Ортақ мақсат.
+  </p>
+
+  <form class="setup" id="setup">
+    <label for="students">Қатысушылар саны</label>
+
+    <input id="students" type="number"
+           min="3" max="150" value="23" required>
+
+    <button class="ghost" type="submit" id="prepare">
+      Дайындау
+    </button>
+
+    <span id="progress">Бөлінді: 0 / —</span>
+  </form>
+
+  <section class="portal-area">
+    <div class="portal" id="portal" aria-hidden="true">
+      <div class="ring one"></div>
+      <div class="ring two"></div>
+      <div class="ring three"></div>
+
+      <div class="portal-core">
+        <div id="portalIcon">
+          <span class="neutral">✧</span>
+        </div>
+        <div id="portalName">ДАЙЫНСЫҢ БА?</div>
+      </div>
+    </div>
+
+    <div id="message" role="status" aria-live="polite">
+      Қатысушылар санын енгізіп, «Дайындау» басыңыз.
+    </div>
+
+    <button class="primary" id="draw" disabled>
+      Командамды анықта →
+    </button>
+  </section>
+
+  <section class="teams" aria-label="Командалар">
+    <article class="card" id="team0">
+      <div class="identity">
+        <div class="emblem" id="icon0" aria-hidden="true"></div>
+        <div>
+          <h2>ИМПУЛЬС</h2>
+          <div class="counter">
+            <span id="count0">0</span>
+            <small id="capacity0">/ —</small>
+          </div>
+        </div>
+      </div>
+      <div class="dots" id="dots0" aria-hidden="true"></div>
+    </article>
+
+    <article class="card" id="team1">
+      <div class="identity">
+        <div class="emblem" id="icon1" aria-hidden="true"></div>
+        <div>
+          <h2>КВАНТ</h2>
+          <div class="counter">
+            <span id="count1">0</span>
+            <small id="capacity1">/ —</small>
+          </div>
+        </div>
+      </div>
+      <div class="dots" id="dots1" aria-hidden="true"></div>
+    </article>
+
+    <article class="card" id="team2">
+      <div class="identity">
+        <div class="emblem" id="icon2" aria-hidden="true"></div>
+        <div>
+          <h2>НОВА</h2>
+          <div class="counter">
+            <span id="count2">0</span>
+            <small id="capacity2">/ —</small>
+          </div>
+        </div>
+      </div>
+      <div class="dots" id="dots2" aria-hidden="true"></div>
+    </article>
+  </section>
+
+  <footer>
+    <a href="index.html">← Басты бет</a>
+
+    <button class="ghost" id="undo" disabled>
+      ↶ Соңғы бөлуді қайтару
+    </button>
+
+    <button class="finish" id="finish" disabled>
+      Топқа бөлуді аяқтау →
+    </button>
+  </footer>
+
+  <p class="note">
+    Команда кездейсоқ анықталады.
+    Барлық белгіленген қатысушы бөлінгенде
+    топтар санының айырмасы бір оқушыдан аспайды.
+  </p>
+</main>
+
+<dialog id="summaryDialog">
+  <h2>Командалар дайын!</h2>
+
+  <p id="summaryText"></p>
+
+  <div class="summary" id="summary"></div>
+
+  <div class="dialog-controls">
+    <button class="ghost" id="continue">
+      Бөлуді жалғастыру
+    </button>
+    <button class="primary" id="closeSummary">
+      Нәтижені сақтау
+    </button>
+  </div>
+</dialog>
+
+<script>
+const $ = id => document.getElementById(id);
+const KEY = "oi-baigesi-full-groups-v1";
+const NAMES = ["ИМПУЛЬС","КВАНТ","НОВА"];
+const COLORS = ["#ffd474","#68e7ff","#d499ff"];
+
+let game = null;
+let busy = false;
+let soundEnabled = false;
+let audioContext;
+let activeSounds = [];
+
+function warn(message) {
+  $("warning").textContent = message;
+  $("warning").hidden = false;
+}
+
+// Белгілер кодпен салынады.
+function icon(team,prefix) {
+  const id = prefix+"gradient";
+
+  const colors = [
+    ["#fff4bd","#ffc548","#9a5515"],
+    ["#e3ffff","#42e6ff","#167293"],
+    ["#ffe7ff","#ce8aff","#7036a3"]
+  ][team];
+
+  const defs = `
+    <defs>
+      <linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="${colors[0]}"/>
+        <stop offset=".45" stop-color="${colors[1]}"/>
+        <stop offset="1" stop-color="${colors[2]}"/>
+      </linearGradient>
+    </defs>`;
+
+  let shape = "";
+
+  if (team === 0) {
+    shape = `
+      <path d="M66 7 23 57h25L34 94l45-54H54z"
+        fill="url(#${id})"
+        stroke="#fff0ba" stroke-width="1.5"/>
+      <path d="M66 7 48 57H23"
+        fill="none" stroke="#fff5c9" stroke-width="2"/>`;
+  }
+
+  if (team === 1) {
+    shape = `
+      <g fill="none" stroke="url(#${id})" stroke-width="3.4">
+        <ellipse cx="50" cy="50" rx="42" ry="16"/>
+        <ellipse cx="50" cy="50" rx="42" ry="16"
+          transform="rotate(60 50 50)"/>
+        <ellipse cx="50" cy="50" rx="42" ry="16"
+          transform="rotate(120 50 50)"/>
+      </g>
+      <circle cx="50" cy="50" r="10"
+        fill="url(#${id})"/>
+      <circle cx="20" cy="39" r="4" fill="#dbffff"/>
+      <circle cx="78" cy="72" r="4" fill="#83f3ff"/>`;
+  }
+
+  if (team === 2) {
+    shape = `
+      <path d="m50 5 12 32 33 13-33 12-12 33-12-33L5 50l33-13z"
+        fill="url(#${id})"
+        stroke="#f5d9ff" stroke-width="1.5"/>
+      <path d="M50 5v45L5 50m45 0 45 0M50 50v45"
+        fill="none" stroke="#fff0ff"
+        stroke-width="1" opacity=".7"/>`;
+  }
+
+  return `
+    <svg viewBox="0 0 100 100"
+      xmlns="http://www.w3.org/2000/svg">
+      ${defs}${shape}
+    </svg>`;
+}
+
+for (let team=0;team<3;team++) {
+  $("icon"+team).innerHTML = icon(team,"card"+team);
+}
+
+// Бұрын сақталған бөлуді қалпына келтіру.
+try {
+  const saved = JSON.parse(localStorage.getItem(KEY));
+
+  if (
+    saved &&
+    Number.isInteger(saved.total) &&
+    saved.total >= 3 && saved.total <= 150 &&
+    Array.isArray(saved.capacity) &&
+    saved.capacity.length === 3 &&
+    saved.capacity.every(n => Number.isInteger(n) && n > 0) &&
+    saved.capacity.reduce((a,b) => a+b,0) === saved.total &&
+    Math.max(...saved.capacity)-Math.min(...saved.capacity) <= 1 &&
+    Array.isArray(saved.history) &&
+    saved.history.every(n => [0,1,2].includes(n)) &&
+    saved.history.length <= saved.total &&
+    [0,1,2].every(team =>
+      saved.history.filter(n => n === team).length <=
+      saved.capacity[team]
+    )
+  ) {
+    game = saved;
+    $("students").value = saved.total;
+  }
+} catch(error) {}
+
+function save() {
+  try {
+    localStorage.setItem(KEY,JSON.stringify(game));
+  } catch(error) {
+    warn("Нәтиже сақталмады. Браузерде сақтау шектелген. Бетті жаппай жалғастырыңыз.");
+  }
+}
+
+function count(team) {
+  return game
+    ? game.history.filter(n => n === team).length
+    : 0;
+}
+
+// Бірқалыпты кездейсоқ таңдау.
+function randomIndex(size) {
+  if (!window.crypto?.getRandomValues) {
+    return Math.floor(Math.random()*size);
+  }
+
+  const limit = 4294967296-(4294967296%size);
+  const value = new Uint32Array(1);
+
+  do {
+    crypto.getRandomValues(value);
+  } while (value[0] >= limit);
+
+  return value[0]%size;
+}
+
+function render() {
+  for (let team=0;team<3;team++) {
+    const filled = count(team);
+    const capacity = game ? game.capacity[team] : 0;
+
+    $("count"+team).textContent = filled;
+    $("capacity"+team).textContent =
+      "/ "+(game ? capacity : "—");
+
+    $("dots"+team).replaceChildren();
+
+    for (let i=0;i<capacity;i++) {
+      const dot = document.createElement("span");
+      dot.className = "dot"+(i<filled ? " lit" : "");
+      $("dots"+team).appendChild(dot);
+    }
+  }
+
+  $("progress").textContent = game
+    ? `Бөлінді: ${game.history.length} / ${game.total}`
+    : "Бөлінді: 0 / —";
+
+  const complete = game &&
+    game.history.length === game.total;
+
+  $("draw").disabled = busy || !game || complete;
+
+  $("draw").textContent = busy
+    ? "Команда анықталуда…"
+    : complete
+      ? "Барлық оқушы бөлінді ✓"
+      : game.history.length
+        ? "Келесі оқушы →"
+        : "Командамды анықта →";
+
+  $("students").disabled = busy;
+  $("prepare").disabled = busy;
+  $("undo").disabled = busy || !game?.history.length;
+  $("finish").disabled = busy || !game?.history.length;
+}
+
+function highlight(team) {
+  document.querySelectorAll(".card").forEach((card,index) => {
+    card.classList.toggle("active",index === team);
+  });
+}
+
+function resetPortal() {
+  $("portal").classList.remove("revealed","scanning");
+  $("portal").style.setProperty("--accent","#ffdb8a");
+  $("portalIcon").innerHTML =
+    '<span class="neutral">✧</span>';
+  $("portalName").textContent = "ДАЙЫНСЫҢ БА?";
+  highlight(null);
+}
+
+async function unlockAudio() {
+  if (!soundEnabled) return;
+
+  try {
+    const Audio = window.AudioContext ||
+      window.webkitAudioContext;
+
+    if (!Audio) return;
+    if (!audioContext) audioContext = new Audio();
+
+    await audioContext.resume();
+  } catch(error) {}
+}
+
+function stopSounds() {
+  activeSounds.forEach(node => {
+    try { node.stop(); } catch(error) {}
+  });
+  activeSounds = [];
+}
+
+function tone(frequency,duration=.3,delay=0) {
+  if (
+    !soundEnabled ||
+    !audioContext ||
+    audioContext.state !== "running" ||
+    document.hidden
+  ) return;
+
+  const time = audioContext.currentTime+delay;
+  const oscillator = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+
+  oscillator.frequency.value = frequency;
+
+  gain.gain.setValueAtTime(0,time);
+  gain.gain.linearRampToValueAtTime(.035,time+.02);
+  gain.gain.exponentialRampToValueAtTime(
+    .0001,time+duration
+  );
+
+  oscillator.connect(gain);
+  gain.connect(audioContext.destination);
+  oscillator.start(time);
+  oscillator.stop(time+duration+.04);
+
+  activeSounds.push(oscillator);
+
+  oscillator.onended = () => {
+    oscillator.disconnect();
+    gain.disconnect();
+    activeSounds = activeSounds.filter(
+      node => node !== oscillator
+    );
+  };
+}
+
+$("sound").onclick = async () => {
+  soundEnabled = !soundEnabled;
+
+  $("sound").textContent =
+    "♫ Дыбыс: "+(soundEnabled ? "қосулы" : "өшірулі");
+
+  $("sound").setAttribute(
+    "aria-pressed",String(soundEnabled)
+  );
+
+  if (soundEnabled) {
+    await unlockAudio();
+    tone(660,.35);
+  } else {
+    stopSounds();
+  }
+};
+
+$("fullscreen").onclick = async () => {
+  try {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
+    } else if (document.documentElement.requestFullscreen) {
+      await document.documentElement.requestFullscreen();
+    } else {
+      warn("Толық экранды браузер мәзірінен қосыңыз.");
+    }
+  } catch(error) {
+    warn("Толық экранды браузер мәзірінен қосыңыз.");
+  }
+};
+
+$("setup").onsubmit = event => {
+  event.preventDefault();
+
+  if (busy || !$("setup").reportValidity()) return;
+
+  const total = Number($("students").value);
+
+  if (!Number.isInteger(total) || total<3 || total>150) return;
+
+  if (game?.history.length && !confirm(
+    "Бұрынғы топқа бөлуді тазалап, қайта бастаймыз ба?"
+  )) return;
+
+  const base = Math.floor(total/3);
+
+  game = {
+    total,
+    capacity:[0,1,2].map(
+      i => base+(i<total%3 ? 1 : 0)
+    ),
+    history:[],
+    finished:false
+  };
+
+  resetPortal();
+
+  $("message").textContent =
+    "Бірінші оқушыны шақырыңыз. Портал дайын!";
+
+  save();
+  render();
+};
+
+const wait = ms => new Promise(
+  resolve => setTimeout(resolve,ms)
+);
+
+$("draw").onclick = async () => {
+  if (
+    busy || !game ||
+    game.history.length >= game.total
+  ) return;
+
+  busy = true;
+  render();
+
+  await unlockAudio();
+  highlight(null);
+
+  // Әр бос орын кездейсоқ таңдалады.
+  const available = [];
+
+  game.capacity.forEach((capacity,team) => {
+    const free = capacity-count(team);
+
+    for (let i=0;i<free;i++) {
+      available.push(team);
+    }
+  });
+
+  const result = available[randomIndex(available.length)];
+
+  $("portal").classList.remove("revealed");
+  $("portal").classList.add("scanning");
+
+  $("message").textContent =
+    "Командамен байланыс орнатылуда…";
+
+  // Бұл анимация. Нақты нәтиже жоғарыда кездейсоқ таңдалды.
+  for (let step=0;step<12;step++) {
+    const preview = step%3;
+
+    $("portalIcon").innerHTML =
+      icon(preview,"preview"+step);
+
+    $("portalName").textContent = NAMES[preview];
+
+    $("portal").style.setProperty(
+      "--accent",COLORS[preview]
+    );
+
+    tone(330+step*38,.09);
+    await wait(105+step*18);
+  }
+
+  game.history.push(result);
+  game.finished = false;
+  save();
+
+  $("portal").classList.remove("scanning");
+  $("portal").classList.add("revealed");
+
+  $("portal").style.setProperty(
+    "--accent",COLORS[result]
+  );
+
+  $("portalIcon").innerHTML = icon(result,"revealed");
+  $("portalName").textContent = NAMES[result];
+
+  $("message").textContent =
+    "Қош келдің! "+NAMES[result]+
+    " командасының үстеліне бар.";
+
+  highlight(result);
+
+  const tunes = [
+    [440,660,880],
+    [392,587,784],
+    [523,784,1047]
+  ];
+
+  tunes[result].forEach((frequency,index) => {
+    tone(frequency,.6,index*.15);
+  });
+
+  busy = false;
+  render();
+
+  if (game.history.length === game.total) {
+    $("message").textContent =
+      "Барлық оқушы бөлінді! Топқа бөлуді аяқтай аласыз.";
+  }
+};
+
+$("undo").onclick = () => {
+  if (busy || !game?.history.length) return;
+
+  if (!confirm(
+    "Соңғы оқушының топқа бөлінуін қайтарамыз ба?"
+  )) return;
+
+  const team = game.history.pop();
+  game.finished = false;
+
+  resetPortal();
+
+  $("message").textContent =
+    NAMES[team]+" командасына соңғы бөлу қайтарылды.";
+
+  save();
+  render();
+};
+
+function showSummary() {
+  const actual = game.history.length;
+  const sizes = [0,1,2].map(count);
+  const difference = Math.max(...sizes)-Math.min(...sizes);
+
+  $("summaryText").textContent =
+    `${actual} оқушы топтарға бөлінді.`+
+    (difference>1
+      ? " Бөлу ерте аяқталды: командалар саны әзірге тең емес."
+      : " Командалар санының айырмасы бір оқушыдан аспайды.");
+
+  $("summary").replaceChildren();
+
+  NAMES.forEach((name,team) => {
+    const box = document.createElement("div");
+    const title = document.createElement("span");
+    const number = document.createElement("b");
+
+    title.textContent = name;
+    number.textContent = count(team);
+
+    box.append(title,number,"оқушы");
+    $("summary").appendChild(box);
+  });
+
+  $("summaryDialog").showModal();
+}
+
+$("finish").onclick = () => {
+  if (busy || !game?.history.length) return;
+
+  const remaining = game.total-game.history.length;
+
+  if (remaining>0 && !confirm(
+    `${remaining} оқушы әлі бөлінбеген. Қазіргі құраммен аяқтаймыз ба?`
+  )) return;
+
+  game.finished = true;
+  save();
+  showSummary();
+};
+
+$("continue").onclick = () => {
+  game.finished = false;
+  save();
+  $("summaryDialog").close();
+};
+
+$("closeSummary").onclick = () => {
+  $("summaryDialog").close();
+
+  $("message").textContent =
+    "Командалар дайын. Топқа бөліну нәтижесі сақталды.";
+};
+
+document.addEventListener("visibilitychange",() => {
+  if (document.hidden) stopSounds();
+});
+
+if (game) {
+  const last = game.history.length
+    ? game.history[game.history.length-1]
+    : null;
+
+  if (last !== null) {
+    $("portal").classList.add("revealed");
+
+    $("portal").style.setProperty(
+      "--accent",COLORS[last]
+    );
+
+    $("portalIcon").innerHTML = icon(last,"restored");
+    $("portalName").textContent = NAMES[last];
+    highlight(last);
+  }
+
+  $("message").textContent = game.finished
+    ? "Топқа бөліну нәтижесі сақталған."
+    : "Бұрынғы нәтиже сақталған. Бөлуді жалғастыра аласыз.";
+}
+
+const backgroundCheck = new Image();
+
+backgroundCheck.onerror = () => {
+  warn("portal.png фоны табылмады. Файл атауын тексеріңіз.");
+};
+
+backgroundCheck.src = "portal.png";
+
+render();
+</script>
+</body>
+</html>
