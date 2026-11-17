@@ -1384,5 +1384,75 @@ window.addEventListener("pagehide",() => {
 
 show();
 </script>
+  <script>
+(() => {
+  const kui = new Audio("balbyrauyn.mp3");
+
+  kui.loop = true;
+  kui.volume = .10;
+  kui.preload = "metadata";
+
+  let requested = false;
+  let requestId = 0;
+
+  function shouldPlay() {
+    return soundEnabled &&
+      !document.hidden &&
+      Boolean(clock) &&
+      !state.completed &&
+      !current().closed &&
+      current().selected === null &&
+      current().remaining > 5;
+  }
+
+  function stopKui() {
+    requested = false;
+    requestId++;
+    kui.pause();
+  }
+
+  async function startKui() {
+    if (requested || !shouldPlay()) return;
+
+    requested = true;
+    const id = ++requestId;
+
+    try {
+      await kui.play();
+
+      if (id !== requestId || !shouldPlay()) {
+        kui.pause();
+      }
+    } catch (error) {
+      if (id !== requestId || !shouldPlay()) return;
+
+      $("warning").hidden = false;
+      $("warning").textContent =
+        "Күй ойнатылмады. Дыбысты өшіріп, қайта қосып көріңіз.";
+    }
+  }
+
+  function syncMusic() {
+    if (shouldPlay()) {
+      startKui();
+    } else if (requested || !kui.paused) {
+      stopKui();
+    }
+  }
+
+  // Батырма басылғаннан кейін ойынның жаңа күйін тексереді.
+  document.addEventListener("click", syncMusic);
+
+  // Соңғы 5 секундта күй тоқтап, уақыт белгісі ғана қалады.
+  setInterval(syncMusic, 100);
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) stopKui();
+    else syncMusic();
+  });
+
+  window.addEventListener("pagehide", stopKui);
+})();
+</script>
 </body>
 </html>
