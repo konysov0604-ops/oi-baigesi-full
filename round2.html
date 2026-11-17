@@ -1553,5 +1553,443 @@ message(
   window.addEventListener("pagehide", stopAudio);
 })();
 </script>
+  <script>
+(() => {
+  const style = document.createElement("style");
+
+  style.textContent = `
+    body {
+      background:
+        linear-gradient(#020b1466, #020b14bb),
+        url("archive.png") center / cover fixed no-repeat;
+      background-color: #06131d;
+    }
+
+    main {
+      width: min(1420px, 96%);
+    }
+
+    header {
+      padding: 17px 20px;
+      border: 1px solid #bca47766;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #162630ed, #07131eeb);
+      box-shadow: 0 8px 30px #0005;
+    }
+
+    h1 {
+      color: #ffe5ac;
+      text-shadow: 0 2px 0 #75522a, 0 4px 18px #000;
+      letter-spacing: 1px;
+    }
+
+    .turn {
+      background: #041923ee;
+      box-shadow: 0 0 20px #55eaff22, inset 0 0 15px #ffffff06;
+    }
+
+    .workspace {
+      gap: 24px;
+      grid-template-columns: 1fr 1.08fr;
+      align-items: stretch;
+    }
+
+    .safe {
+      position: relative;
+      margin-top: 23px;
+      padding: 57px 21px 20px;
+      border: 8px ridge #9d8e72;
+      border-radius: 30px 30px 20px 20px;
+      background:
+        repeating-linear-gradient(
+          4deg,
+          #ffffff03 0px,
+          #ffffff03 1px,
+          transparent 1px,
+          transparent 5px
+        ),
+        linear-gradient(
+          130deg,
+          #66727a,
+          #1a2832 18%,
+          #3d4d56 47%,
+          #101d28 75%,
+          #68747a
+        );
+      box-shadow:
+        inset 0 0 0 2px #e0c895,
+        inset 0 0 0 8px #12202c,
+        inset 0 0 30px #000,
+        0 15px 35px #0009;
+    }
+
+    .safe::before {
+      content: "";
+      position: absolute;
+      top: -31px;
+      left: calc(50% - 43px);
+      width: 86px;
+      height: 86px;
+      border: 7px ridge #c5a16b;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle, #cba86a 0 13%, #40372b 14% 21%,
+          transparent 22%),
+        repeating-conic-gradient(
+          from 0deg,
+          #eadbb7 0deg 2deg,
+          #14202b 2deg 13deg,
+          #a0875b 13deg 15deg
+        );
+      box-shadow: 0 6px 13px #0009, inset 0 0 0 8px #14202b;
+      z-index: 2;
+    }
+
+    .safe-title {
+      position: relative;
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: #e5c795;
+      margin-bottom: 17px;
+    }
+
+    .grid {
+      padding: 10px;
+      gap: 11px;
+      border: 2px solid #8d7754;
+      border-radius: 13px;
+      background: #020a12;
+      box-shadow: inset 0 0 25px #000;
+      perspective: 1000px;
+    }
+
+    .door {
+      position: relative;
+      isolation: isolate;
+      overflow: visible;
+      padding: 0;
+      border: 1px solid #6d6047;
+      border-radius: 9px;
+      background: radial-gradient(circle, #172f31, #02070d);
+      box-shadow: inset 0 0 18px #000;
+      perspective: 600px;
+      font-family: Georgia, serif;
+    }
+
+    .door:disabled {
+      opacity: .7;
+    }
+
+    .door.correct:disabled,
+    .door.failed:disabled {
+      opacity: 1;
+    }
+
+    .door::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      margin: 0;
+      border-radius: 8px;
+      font-size: 25px;
+      z-index: 0;
+    }
+
+    .door.correct::after {
+      content: "✓";
+      color: var(--accent);
+      text-shadow: 0 0 15px var(--accent);
+      background: radial-gradient(
+        circle,
+        color-mix(in srgb, var(--accent) 27%, transparent),
+        #020a12 75%
+      );
+    }
+
+    .door.failed::after {
+      content: "×";
+      color: #e7ac8d;
+      background: #1c1717;
+    }
+
+    .door-face {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 3px ridge #c2a16c;
+      border-radius: 8px;
+      transform-origin: left center;
+      backface-visibility: hidden;
+      background:
+        linear-gradient(135deg, #ffffff13, transparent 38%),
+        repeating-linear-gradient(
+          0deg,
+          transparent 0px,
+          transparent 3px,
+          #ffffff03 4px
+        ),
+        linear-gradient(145deg, #354957, #101d2a 65%, #293944);
+      box-shadow:
+        inset 0 0 0 3px #07111b,
+        inset 0 0 14px #0006,
+        3px 4px 9px #0008;
+      transition: transform .65s ease;
+    }
+
+    .door-face::before,
+    .door-face::after {
+      content: "";
+      position: absolute;
+      left: -5px;
+      width: 7px;
+      height: 20%;
+      border: 1px solid #e1c58d;
+      border-radius: 3px;
+      background: linear-gradient(90deg, #765b37, #efce8c, #705735);
+    }
+
+    .door-face::before { top: 16%; }
+    .door-face::after { bottom: 16%; }
+
+    .door-number {
+      font-size: clamp(22px, 3vw, 39px);
+      color: #ffe1a4;
+      text-shadow: 0 2px 0 #665031, 0 3px 7px #000;
+      line-height: 1.1;
+    }
+
+    .door-key {
+      width: 10px;
+      height: 13px;
+      margin-top: 8px;
+      border-radius: 50% 50% 2px 2px;
+      background: #02070c;
+      box-shadow: 0 0 0 2px #b99a63;
+    }
+
+    .door.active .door-face {
+      border-color: #9ef6ff;
+      box-shadow:
+        inset 0 0 19px #5feaff33,
+        0 0 18px #5feaff66;
+    }
+
+    .door.correct .door-face,
+    .door.failed .door-face {
+      transform: rotateY(-77deg);
+    }
+
+    .door.animate-open .door-face {
+      animation: vault-open .75s ease both;
+    }
+
+    .safe-note {
+      color: #d4c4a7;
+      margin-bottom: 0;
+    }
+
+    .panel {
+      position: relative;
+      margin-top: 23px;
+      border: 2px solid #73d8e4;
+      border-radius: 24px;
+      background:
+        radial-gradient(ellipse at top left, #164a5a66, transparent 70%),
+        linear-gradient(145deg, #072635f5, #04131ff8);
+      box-shadow:
+        0 0 23px #4fe5ff22,
+        inset 0 0 0 3px #ffffff05,
+        0 15px 35px #0007;
+    }
+
+    .subject {
+      color: #c5f6ff;
+      border-color: #6bcedb;
+      background: linear-gradient(135deg, #215365, #0c2b3e);
+      box-shadow: inset 0 1px 0 #ffffff33;
+    }
+
+    .task-title {
+      color: #fff2d4;
+    }
+
+    .source, .target {
+      border-color: #70b5c4;
+      background:
+        linear-gradient(135deg, #164558dd, #071f32ee);
+      box-shadow: inset 0 1px 0 #ffffff15, 0 4px 9px #0003;
+    }
+
+    .source.selected {
+      border: 2px solid #ffe7a5;
+      background: linear-gradient(135deg, #6a5429, #28383b);
+      box-shadow: 0 0 18px #ffd47b44;
+    }
+
+    .source.assigned {
+      background: linear-gradient(135deg, #1a5360, #102b3d);
+    }
+
+    .target.filled {
+      border-color: #9beaff;
+      background: linear-gradient(135deg, #215b65, #123b4d);
+      box-shadow: inset 0 0 15px #83eaff11;
+    }
+
+    .primary {
+      border: 1px solid #ffeebf;
+      box-shadow:
+        inset 0 1px 0 #fff9,
+        0 3px 0 #79501f,
+        0 6px 14px #0004;
+    }
+
+    .timer-box {
+      padding: 8px 13px;
+      border: 1px solid #74d6e2;
+      border-radius: 14px;
+      background: #041b29;
+      box-shadow: inset 0 0 15px #47dfff11;
+    }
+
+    .timer-box b {
+      color: #a7f4ff;
+    }
+
+    .banner {
+      background: #061b29ee;
+      border-color: #779ca066;
+    }
+
+    .team {
+      background: linear-gradient(140deg, #182a37f5, #090f1bf5);
+      box-shadow: inset 0 1px 0 #ffffff17, 0 6px 15px #0005;
+    }
+
+    .team.active {
+      box-shadow:
+        0 0 24px color-mix(in srgb, var(--accent) 40%, transparent),
+        inset 0 0 17px color-mix(in srgb, var(--accent) 10%, transparent);
+    }
+
+    @keyframes vault-open {
+      from { transform: rotateY(0); }
+      to { transform: rotateY(-77deg); }
+    }
+
+    @media (max-width: 900px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+      .safe {
+        max-width: 680px;
+      }
+    }
+
+    @media (max-width: 550px) {
+      header {
+        padding: 14px;
+      }
+      .safe {
+        padding: 51px 10px 15px;
+        border-width: 5px;
+      }
+      .grid {
+        padding: 7px;
+        gap: 8px;
+      }
+      .door-number {
+        font-size: 25px;
+      }
+      .door-key {
+        width: 7px;
+        height: 10px;
+        margin-top: 6px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .door.animate-open .door-face {
+        animation: none;
+      }
+      .door-face {
+        transition: none;
+      }
+    }
+  `;
+
+  document.head.appendChild(style);
+
+  // Ұяшықтардың үстіне жеке қозғалатын есік қосылады.
+  const previouslyClosed = new Set();
+
+  function decorateDoors() {
+    document.querySelectorAll("#grid .door").forEach(button => {
+      if (button.querySelector(".door-face")) return;
+
+      const number = button.textContent.trim();
+      const closed =
+        button.classList.contains("correct") ||
+        button.classList.contains("failed");
+
+      const face = document.createElement("span");
+      face.className = "door-face";
+      face.setAttribute("aria-hidden", "true");
+
+      const label = document.createElement("span");
+      label.className = "door-number";
+      label.textContent = number;
+
+      const keyhole = document.createElement("span");
+      keyhole.className = "door-key";
+
+      face.append(label, keyhole);
+      button.replaceChildren(face);
+
+      if (closed && !previouslyClosed.has(number)) {
+        button.classList.add("animate-open");
+      }
+
+      if (closed) previouslyClosed.add(number);
+      else previouslyClosed.delete(number);
+    });
+  }
+
+  // Сақталған ескі нәтижелерді ашылу анимациясынсыз көрсетеміз.
+  document.querySelectorAll("#grid .door").forEach(button => {
+    if (
+      button.classList.contains("correct") ||
+      button.classList.contains("failed")
+    ) {
+      previouslyClosed.add(button.textContent.trim());
+    }
+  });
+
+  decorateDoors();
+
+  const gridObserver = new MutationObserver(decorateDoors);
+
+  gridObserver.observe(document.getElementById("grid"), {
+    childList: true
+  });
+
+  const backgroundCheck = new Image();
+
+  backgroundCheck.onerror = () => {
+    const warning = document.getElementById("warning");
+    warning.hidden = false;
+    warning.textContent =
+      "archive.png фоны табылмады. Суретті жүктеп, Commit changes басылғанын тексеріңіз.";
+  };
+
+  backgroundCheck.src = "archive.png";
+})();
+</script>
 </body>
 </html>
