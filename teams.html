@@ -1102,5 +1102,131 @@ backgroundCheck.src = "portal.png";
 
 render();
 </script>
+  <script>
+(() => {
+  const kui = new Audio("adai.mp3");
+
+  kui.loop = true;
+  kui.volume = .14;
+  kui.preload = "metadata";
+
+  let fadeFrame = null;
+  let restoreTimer = null;
+  let requestId = 0;
+
+  function fadeTo(target) {
+    cancelAnimationFrame(fadeFrame);
+
+    const from = kui.volume;
+    const started = performance.now();
+
+    function frame(now) {
+      const progress = Math.min(1, (now - started) / 450);
+
+      kui.volume = from + (target - from) * progress;
+
+      if (progress < 1) {
+        fadeFrame = requestAnimationFrame(frame);
+      }
+    }
+
+    fadeFrame = requestAnimationFrame(frame);
+  }
+
+  function allowed() {
+    return soundEnabled &&
+      !document.hidden &&
+      !$("summaryDialog").open;
+  }
+
+  async function playKui(showError = false) {
+    if (!allowed()) return;
+
+    const id = ++requestId;
+
+    try {
+      await kui.play();
+
+      if (id !== requestId || !allowed()) {
+        kui.pause();
+        return;
+      }
+
+      fadeTo(
+        $("portal").classList.contains("scanning")
+          ? .025
+          : .14
+      );
+    } catch (error) {
+      if (showError && id === requestId && allowed()) {
+        warn(
+          "Күй ойнатылмады. Дыбысты өшіріп, қайта қосып көріңіз."
+        );
+      }
+    }
+  }
+
+  function pauseKui() {
+    requestId++;
+    clearTimeout(restoreTimer);
+    cancelAnimationFrame(fadeFrame);
+    kui.pause();
+  }
+
+  // Қолданыстағы дыбыс батырмасы күйді де басқарады.
+  $("sound").addEventListener("click", () => {
+    if (soundEnabled) {
+      playKui(true);
+    } else {
+      pauseKui();
+    }
+  });
+
+  // Портал айналғанда күй бәсеңдейді.
+  const portalObserver = new MutationObserver(() => {
+    clearTimeout(restoreTimer);
+
+    if (!allowed()) return;
+
+    if ($("portal").classList.contains("scanning")) {
+      fadeTo(.025);
+    } else {
+      // Команданың жеңіс үніне орын қалдырамыз.
+      restoreTimer = setTimeout(() => {
+        if (allowed()) fadeTo(.14);
+      }, 1100);
+    }
+  });
+
+  portalObserver.observe($("portal"), {
+    attributes: true,
+    attributeFilter: ["class"]
+  });
+
+  // Қорытынды терезесі ашылғанда күй тоқтайды.
+  const dialogObserver = new MutationObserver(() => {
+    if ($("summaryDialog").open) {
+      pauseKui();
+    } else if (allowed()) {
+      playKui();
+    }
+  });
+
+  dialogObserver.observe($("summaryDialog"), {
+    attributes: true,
+    attributeFilter: ["open"]
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      pauseKui();
+    } else if (allowed()) {
+      playKui();
+    }
+  });
+
+  window.addEventListener("pagehide", pauseKui);
+})();
+</script>
 </body>
 </html>
