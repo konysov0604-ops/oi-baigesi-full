@@ -577,7 +577,9 @@ function openGroups() {
   window.scrollTo(0,0);
 }
 
-$("start").onclick = openGroups;
+$("start").onclick = () => {
+  window.location.href = "teams.html";
+};
 
 $("back").onclick = () => {
   if (busy) return;
