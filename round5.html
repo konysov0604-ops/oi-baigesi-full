@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="kk" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="google" content="notranslate">
+<title>V тур — Алтын финал</title>
+<style>
+*{box-sizing:border-box}
+:root{--gold:#ffda88;--ink:#07172f}
+body{
+  margin:0;min-height:100vh;
+  font-family:"Segoe UI",Arial,sans-serif;
+  color:#fff2d5;background:
+  linear-gradient(#04102599,#041025ee),
+  url("stage.png") center/cover fixed;
+  background-color:var(--ink)
+}
+button,a{touch-action:manipulation}
+button{font:inherit;cursor:pointer}
+button:disabled{opacity:.35;cursor:default}
+button:focus-visible,a:focus-visible{
+  outline:3px solid white;outline-offset:4px
+}
+a{color:var(--gold)}
+main{width:min(1250px,94%);margin:auto;padding:24px 0}
+header,.tools,.actions{
+  display:flex;gap:12px;align-items:center;
+  justify-content:center;flex-wrap:wrap
+}
+header{justify-content:space-between}
+h1{color:var(--gold);font-size:clamp(25px,4vw,44px);margin:0}
+.brand{font-weight:900;text-decoration:none}
+button,.link{
+  padding:13px 18px;border-radius:12px;
+  border:1px solid #cba86a;background:#102644;
+  color:#ffe4b0;font-weight:700
+}
+.primary{
+  color:#40260c;background:linear-gradient(120deg,#fff0bd,#dea13d);
+  border-color:#ffe5a6
+}
+.good{background:#174b3b;border-color:#8be0ad;color:#dcffe7}
+.bad{background:#522b35;border-color:#e9a5ab;color:#ffe6e9}
+.panel{
+  margin-top:22px;padding:30px;border:1px solid #d3ac67;
+  border-radius:24px;background:linear-gradient(135deg,#172d49f5,#08152bf5);
+  box-shadow:0 20px 70px #0007
+}
+.eyebrow{text-align:center;color:#d5c39e;letter-spacing:2px}
+.keys{
+  display:grid;grid-template-columns:repeat(20,1fr);
+  gap:7px;margin:22px 0
+}
+.key{
+  height:25px;border:1px solid #89734e;
+  border-radius:5px;background:#15253a;
+  transition:background .3s,box-shadow .3s
+}
+.key.done{background:#ad8a4e}
+.key.won{
+  background:linear-gradient(135deg,#fff4c8,#d49631);
+  box-shadow:0 0 12px #efb64655
+}
+.key.current{outline:2px solid #96e8ff;outline-offset:3px}
+.meta{
+  display:flex;justify-content:space-between;
+  align-items:center;gap:15px;flex-wrap:wrap
+}
+.pill{
+  border:1px solid #b49561;border-radius:30px;
+  padding:9px 15px;font-size:14px
+}
+.timer{
+  display:flex;align-items:center;gap:16px;
+  padding:12px 20px;background:#06152c;
+  border:1px solid #bda06b;border-radius:16px
+}
+.timer b{
+  font-size:48px;color:#ffe1a4;
+  font-variant-numeric:tabular-nums
+}
+.timer small{display:block;color:#bbcadc}
+.timer strong{font-size:22px;color:#a9efff}
+.timer.urgent{border-color:#ff9e8d;background:#40242e}
+h2{
+  font-size:clamp(25px,3.2vw,39px);
+  line-height:1.55;text-align:center;margin:30px 0
+}
+.help{text-align:center;color:#c7c3bb;line-height:1.8}
+.teams{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:16px;margin:25px 0
+}
+.team{
+  --accent:#ffdb83;
+  border:1px solid var(--accent);border-radius:18px;
+  background:#0a1d36;padding:20px;text-align:center;
+  transition:transform .2s,box-shadow .2s
+}
+.team:nth-child(2){--accent:#85eaff}
+.team:nth-child(3){--accent:#d7a3ff}
+.team.selected{
+  transform:translateY(-5px);
+  box-shadow:0 0 25px color-mix(in srgb,var(--accent) 35%,transparent)
+}
+.team h3{color:var(--accent);margin:0 0 10px;font-size:23px}
+.team p{font-size:12px;color:#d5c8b2;line-height:1.8}
+.team strong{display:block;font-size:27px;margin:12px 0}
+.team button{width:100%;border-color:var(--accent)}
+.banner,.answer,.notice{
+  margin-top:20px;padding:18px;border-radius:13px;
+  border:1px solid #a58b6066;background:#0e233f;
+  line-height:1.8;text-align:center
+}
+.banner.success{
+  background:#403319;border-color:#f0c477;color:#ffecb6
+}
+.answer{
+  background:#163f33;border-color:#93d3a7;color:#e8ffe9
+}
+footer{
+  display:flex;justify-content:space-between;
+  align-items:center;flex-wrap:wrap;gap:15px;margin-top:24px
+}
+[hidden]{display:none!important}
+dialog{
+  width:min(1100px,96vw);max-height:94vh;overflow:auto;
+  padding:25px;background:#091b33;color:#fff0d1;
+  border:1px solid #d8b373;border-radius:20px
+}
+dialog::backdrop{background:#000c;backdrop-filter:blur(6px)}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;margin:20px 0}
+th,td{
+  border:1px solid #b89c6355;padding:12px;
+  text-align:center;white-space:nowrap
+}
+th{background:#19334e;color:#ffe0a3}
+.diplomas{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:16px;margin:25px 0
+}
+.diploma{
+  position:relative;padding:30px 18px;text-align:center;
+  color:#34250f;background:
+  radial-gradient(ellipse at top,#fffdf5,#f2e0b6);
+  border:8px double #b48a3d;outline:1px solid #f4d48e;
+  min-height:390px;overflow:hidden
+}
+.diploma::before{
+  content:"✦";position:absolute;font-size:220px;
+  color:#b68b2910;left:50%;top:65px;transform:translateX(-50%)
+}
+.diploma>*{position:relative}
+.diploma .medal{font-size:45px}
+.diploma h3{
+  font-family:Georgia,serif;font-size:30px;
+  letter-spacing:3px;margin:12px 0;color:#815817
+}
+.diploma h4{font-size:24px;margin:17px 0}
+.diploma p{font-size:13px;line-height:1.8}
+.diploma b{display:block;font-size:32px;color:#805515}
+.diploma .sum{font-size:20px;font-weight:800}
+.diploma small{display:block;margin-top:20px}
+#warning{background:#663322}
+@media(max-width:700px){
+  header{justify-content:center;text-align:center}
+  .panel{padding:18px}
+  .keys{gap:4px}
+  .key{height:18px}
+  .teams{gap:7px}
+  .team{padding:14px 7px}
+  .team h3{font-size:14px}
+  .team button{padding:12px 5px;font-size:12px}
+  .team strong{font-size:20px}
+  .diplomas{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){
+  *{transition:none!important}
+}
+@media print{
+  @page{size:A4 landscape;margin:10mm}
+  body{background:white;color:black}
+  body>main{display:none!important}
+  dialog:not([open]){display:none!important}
+  #resultsDialog[open]{
+    display:block!important;position:static;
+    width:100%;max-width:none;max-height:none;
+    padding:0;border:0;background:white;color:black;overflow:visible
+  }
+  #resultsDialog::backdrop{display:none}
+  .no-print{display:none!important}
+  .diplomas{display:block;margin:0}
+  .diploma{
+    min-height:180mm;padding:22mm;
+    break-after:page;page-break-after:always;
+    print-color-adjust:exact;-webkit-print-color-adjust:exact
+  }
+  .diploma:last-child{break-after:auto;page-break-after:auto}
+  .diploma h3{font-size:55px}
+  .diploma h4{font-size:38px}
+  .diploma p{font-size:20px}
+  .diploma b{font-size:50px}
+  .diploma .sum{font-size:28px}
+}
+</style>
+</head>
+
+<body>
+<main>
+  <div id="warning" class="notice" role="status" hidden></div>
+
+  <header>
+    <a class="brand" href="index.html">ОЙ БӘЙГЕСІ</a>
+    <h1>V ТУР · АЛТЫН ФИНАЛ</h1>
+    <div class="tools">
+      <button id="sound" aria-pressed="false">♫ Өшірулі</button>
+      <button id="fullscreen" aria-label="Толық экран">⛶</button>
+    </div>
+  </header>
+
+  <p class="eyebrow">20 СҰРАҚ · ҮШ КОМАНДА · БІР МАҚСАТ</p>
+  <div class="keys" id="keys" aria-label="Сұрақтардың орындалуы"></div>
+
+  <section class="panel">
+    <div class="meta">
+      <span class="pill" id="subject"></span>
+      <span class="pill" id="counter"></span>
+      <div class="timer" id="timer">
+        <b id="seconds">20</b>
+        <div>
+          <small>секунд</small>
+          <strong id="points">10 ұпай</strong>
+        </div>
+      </div>
+    </div>
+
+    <h2 id="question"></h2>
+
+    <p class="help" id="help">
+      Жүргізуші сұрақты оқып, уақытты қосады.
+      Бірінші белгі берген команданы таңдаңыз.
+    </p>
+
+    <div class="actions">
+      <button id="start" class="primary">▶ Сұрақты ашу</button>
+      <button id="pause">Ⅱ Кідірту</button>
+    </div>
+
+    <section class="teams">
+      <article class="team" id="team0">
+        <h3>ϟ ИМПУЛЬС</h3>
+        <p id="details0"></p>
+        <strong id="total0"></strong>
+        <button data-team="0">Бірінші жауап береді</button>
+      </article>
+      <article class="team" id="team1">
+        <h3>⚛ КВАНТ</h3>
+        <p id="details1"></p>
+        <strong id="total1"></strong>
+        <button data-team="1">Бірінші жауап береді</button>
+      </article>
+      <article class="team" id="team2">
+        <h3>✦ НОВА</h3>
+        <p id="details2"></p>
+        <strong id="total2"></strong>
+        <button data-team="2">Бірінші жауап береді</button>
+      </article>
+    </section>
+
+    <div class="actions" id="judging" hidden>
+      <button id="correct" class="good">✓ Жауап дұрыс</button>
+      <button id="wrong" class="bad">✕ Жауап қате</button>
+      <button id="cancel">Топ таңдауын қайтару</button>
+    </div>
+
+    <div class="answer" id="answer" hidden></div>
+
+    <div class="actions">
+      <button id="reveal">Жауабын ашу · 0 ұпай</button>
+      <button id="next" class="primary">Келесі сұрақ →</button>
+    </div>
+  </section>
+
+  <div class="banner" id="banner" role="status" aria-live="polite"></div>
+
+  <footer>
+    <a href="round4.html">← IV тур</a>
+    <button id="results">Жалпы ұпай кестесі</button>
+    <button id="undo">Осы сұрақты қайта өткізу</button>
+    <button id="reset">V турды қайта бастау</button>
+  </footer>
+</main>
+
+<dialog id="resultsDialog">
+  <div class="no-print">
+    <h2 id="resultsTitle">Ой бәйгесі — қорытынды</h2>
+    <p class="notice" id="completionNotice"></p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Орын</th><th>Команда</th>
+            <th>I</th><th>II</th><th>III</th><th>IV</th><th>V</th>
+            <th>Барлығы</th>
+          </tr>
+        </thead>
+        <tbody id="resultsBody"></tbody>
+      </table>
+    </div>
+
+    <div class="actions">
+      <button class="primary" id="print">
+        Дипломдарды басып шығару / PDF
+      </button>
+      <button id="closeResults">Жабу</button>
+    </div>
+  </div>
+
+  <section class="diplomas" id="diplomas"></section>
+</dialog>
+
+<script>
+"use strict";
+
+const QUESTIONS=[
+  {
+    subject:"Математика",
+    q:"Бағасы 500 теңге болатын затқа 20% жеңілдік жасалды. Жаңа бағасы қанша?",
+    a:"400 теңге. Жеңілдік: 500 × 0,2 = 100 теңге."
+  },
+  {
+    subject:"Алгебра",
+    q:"5x − 7 = 18 теңдеуіндегі x нешеге тең?",
+    a:"x = 5. Себебі 5x = 25."
+  },
+  {
+    subject:"Геометрия",
+    q:"Қабырғалары 6 см және 8 см тіктөртбұрыштың ауданы қанша?",
+    a:"48 см². Аудан: 6 × 8."
+  },
+  {
+    subject:"Қазақ тілі",
+    q:"«Балалар» сөзінің түбірі қандай?",
+    a:"Бала. «-лар» — көптік жалғауы."
+  },
+  {
+    subject:"Қазақ әдебиеті",
+    q:"«Кел, балалар, оқылық!» өлеңінің авторы кім?",
+    a:"Ыбырай Алтынсарин."
+  },
+  {
+    subject:"Орыс тілі",
+    q:"Назовите множественное число слова «человек».",
+    a:"Люди."
+  },
+  {
+    subject:"Орыс әдебиеті",
+    q:"Кто написал «Сказку о рыбаке и рыбке»?",
+    a:"Александр Сергеевич Пушкин."
+  },
+  {
+    subject:"Ағылшын тілі",
+    q:"«She ... a book every day» сөйлеміне read етістігінің қандай формасы қойылады?",
+    a:"Reads. She reads a book every day."
+  },
+  {
+    subject:"Қазақстан тарихы",
+    q:"Түркістандағы әйгілі кесене қай ойшыл әрі ақынның атымен аталады?",
+    a:"Қожа Ахмет Ясауи."
+  },
+  {
+    subject:"Дүниежүзі тарихы",
+    q:"Ежелгі Мысырдағы суретке ұқсас таңбалардан тұратын жазу қалай аталады?",
+    a:"Иероглифтік жазу. Иероглифтер деп те қабылданады."
+  },
+  {
+    subject:"География",
+    q:"Жерді Солтүстік және Оңтүстік жарты шарларға бөлетін шартты сызық қалай аталады?",
+    a:"Экватор."
+  },
+  {
+    subject:"Биология",
+    q:"Өсімдік фотосинтез кезінде ауадан қандай газды сіңіреді?",
+    a:"Көмірқышқыл газын."
+  },
+  {
+    subject:"Физика",
+    q:"Дене 150 метрді 30 секундта жүріп өтті. Орташа жылдамдығы қандай?",
+    a:"5 м/с. 150 : 30 = 5."
+  },
+  {
+    subject:"Химия",
+    q:"CO₂ молекуласының құрамында барлығы неше атом бар?",
+    a:"3 атом: 1 көміртек және 2 оттек атомы."
+  },
+  {
+    subject:"Информатика",
+    q:"Мектеп информатикасындағы есептеу бойынша 1 байт неше битке тең?",
+    a:"8 бит."
+  },
+  {
+    subject:"Музыка",
+    q:"«Адай» күйінің авторы кім?",
+    a:"Құрманғазы Сағырбайұлы."
+  },
+  {
+    subject:"Көркем еңбек",
+    q:"Суретшінің өзін бейнелеп салған портреті қалай аталады?",
+    a:"Автопортрет."
+  },
+  {
+    subject:"Дене шынықтыру",
+    q:"Баскетболда бір командадан алаңда бір уақытта неше ойыншы болады?",
+    a:"5 ойыншы."
+  },
+  {
+    subject:"Жаратылыстану",
+    q:"Күн мен түннің алмасуына Жердің қандай қозғалысы себеп болады?",
+    a:"Жердің өз осінен айналуы."
+  },
+  {
+    subject:"Логика · Соңғы сұрақ",
+    q:"Қорапта 3 қызыл және 3 көк шар бар. Қарамай алғанда, кемінде екі шардың түсі бірдей болуы үшін ең аз неше шар алу керек?",
+    a:"3 шар. Екі ғана түс болғандықтан, үшінші шар алдыңғы екеуінің кемінде бірімен түстес болады."
+  }
+];
+
+const $=id=>document.getElementById(id);
+const NAMES=["ИМПУЛЬС","КВАНТ","НОВА"];
+const KEY="oi-baigesi-full-round5-v1";
+const LEDGER_KEY="oi-baigesi-full-results-v1";
+const ROMAN=["I","II","III","IV","V"];
+
+function freshRecord(){
+  return {
+    remaining:20,started:false,selected:null,
+    lockedPoints:0,wrong:[],winner:null,
+    points:0,closed:false
+  };
+}
+
+function fresh(){
+  return {
+    index:0,completed:false,
+    records:QUESTIONS.map(()=>freshRecord())
+  };
+}
+
+function validRecord(r){
+  return r&&
+    Number.isFinite(r.remaining)&&r.remaining>=0&&r.remaining<=20&&
+    typeof r.started==="boolean"&&typeof r.closed==="boolean"&&
+    (r.selected===null||[0,1,2].includes(r.selected))&&
+    (r.winner===null||[0,1,2].includes(r.winner))&&
+    Number.isInteger(r.lockedPoints)&&r.lockedPoints>=0&&r.lockedPoints<=10&&
+    Number.isInteger(r.points)&&r.points>=0&&r.points<=10&&
+    Array.isArray(r.wrong)&&new Set(r.wrong).size===r.wrong.length&&
+    r.wrong.every(n=>[0,1,2].includes(n));
+}
+
+let state=fresh();
+try{
+  const saved=JSON.parse(localStorage.getItem(KEY));
+  if(saved&&Number.isInteger(saved.index)&&saved.index>=0&&
+    saved.index<20&&typeof saved.completed==="boolean"&&
+    Array.isArray(saved.records)&&saved.records.length===20&&
+    saved.records.every(validRecord)){
+    state=saved;
+    state.completed=state.records.every(r=>r.closed);
+  }
+}catch(error){}
+
+let clock=null;
+let deadline=0;
+let soundEnabled=false;
+let audioContext;
+let lastBeep=-1;
+
+const current=()=>state.records[state.index];
+const pointsFor=s=>Math.min(10,Math.max(0,Math.ceil(s/2)));
+
+function message(text,success=false){
+  $("banner").textContent=text;
+  $("banner").classList.toggle("success",success);
+}
+
+function ledger(){
+  try{
+    const data=JSON.parse(localStorage.getItem(LEDGER_KEY));
+    if(data&&data.version===1&&data.rounds&&
+      typeof data.rounds==="object"&&!Array.isArray(data.rounds)){
+      return data;
+    }
+  }catch(error){}
+  return {version:1,rounds:{}};
+}
+
+function score5(team){
+  return state.records.reduce(
+    (sum,r)=>sum+(r.closed&&r.winner===team?r.points:0),0
+  );
+}
+
+function save(){
+  try{
+    localStorage.setItem(KEY,JSON.stringify(state));
+    const data=ledger();
+    data.rounds.round5={
+      scores:NAMES.map((_,team)=>score5(team)),
+      completed:state.completed
+    };
+    localStorage.setItem(LEDGER_KEY,JSON.stringify(data));
+  }catch(error){
+    $("warning").hidden=false;
+    $("warning").textContent=
+      "Браузер нәтижені сақтай алмады. Бетті жаппай, ұпайларды жазып алыңыз.";
+  }
+}
+
+function scoreRows(){
+  const data=ledger();
+  const rows=ROMAN.map((_,index)=>{
+    const row=data.rounds["round"+(index+1)]?.scores;
+    return Array.isArray(row)&&row.length===3&&
+      row.every(n=>Number.isFinite(n)&&n>=0)?row:[0,0,0];
+  });
+  rows[4]=NAMES.map((_,team)=>score5(team));
+  return rows;
+}
+
+function stopClock(){
+  clearInterval(clock);
+  clock=null;
+}
+
+function snapshot(){
+  if(clock){
+    current().remaining=Math.max(0,(deadline-performance.now())/1000);
+  }
+}
+
+function tone(frequency,duration=.15,delay=0){
+  if(!soundEnabled||!audioContext||
+    audioContext.state!=="running"||document.hidden)return;
+
+  const at=audioContext.currentTime+delay;
+  const oscillator=audioContext.createOscillator();
+  const gain=audioContext.createGain();
+
+  oscillator.frequency.value=frequency;
+  gain.gain.setValueAtTime(0,at);
+  gain.gain.linearRampToValueAtTime(.035,at+.015);
+  gain.gain.exponentialRampToValueAtTime(.0001,at+duration);
+
+  oscillator.connect(gain);
+  gain.connect(audioContext.destination);
+  oscillator.start(at);
+  oscillator.stop(at+duration+.03);
+  oscillator.onended=()=>{
+    oscillator.disconnect();
+    gain.disconnect();
+  };
+}
+
+function paint(){
+  const r=current();
+  $("seconds").textContent=Math.ceil(r.remaining);
+  $("points").textContent=(
+    r.closed?r.points:
+    r.selected!==null?r.lockedPoints:
+    pointsFor(r.remaining)
+  )+" ұпай";
+  $("timer").classList.toggle("urgent",!r.closed&&r.remaining<=5);
+}
+
+function render(){
+  const r=current();
+  const task=QUESTIONS[state.index];
+  const rows=scoreRows();
+
+  $("subject").textContent=task.subject;
+  $("counter").textContent=`Сұрақ ${state.index+1} / 20`;
+  $("question").textContent=state.completed
+    ?"АЛТЫН ФИНАЛ АЯҚТАЛДЫ!"
+    :r.started||r.closed
+      ?task.q
+      :"Дайынсыздар ма? Келесі сұрақты ашайық!";
+
+  $("help").textContent=state.completed
+    ?"Бес турдың ұпайлары жалпы кестеде көрсетіледі."
+    :r.selected!==null
+      ?NAMES[r.selected]+" жауап береді. Уақыт пен ұпай тоқтатылды."
+      :"Бірінші белгі берген топты жүргізуші таңдайды. 20 секунд — ең көбі 10 ұпай.";
+
+  $("start").hidden=r.closed||state.completed||r.selected!==null;
+  $("start").disabled=Boolean(clock);
+  $("start").textContent=r.started?"▶ Уақытты жалғастыру":"▶ Сұрақты ашу";
+  $("pause").hidden=r.closed||state.completed||r.selected!==null;
+  $("pause").disabled=!clock;
+
+  $("judging").hidden=r.closed||state.completed||r.selected===null;
+  $("reveal").hidden=r.closed||state.completed;
+  $("next").hidden=state.completed;
+  $("next").textContent=state.index===19
+    ?"Сайысты аяқтау 🏆":"Келесі сұрақ →";
+
+  $("answer").hidden=!r.closed||state.completed;
+  $("answer").textContent="Дұрыс жауап: "+task.a;
+  $("undo").disabled=!r.started&&!r.closed;
+
+  $("keys").replaceChildren();
+  state.records.forEach((record,index)=>{
+    const key=document.createElement("span");
+    key.className="key";
+    key.classList.toggle("done",record.closed);
+    key.classList.toggle("won",record.closed&&record.points>0);
+    key.classList.toggle("current",index===state.index&&!state.completed);
+    key.title=`${index+1}-сұрақ: ${record.points} ұпай`;
+    $("keys").appendChild(key);
+  });
+
+  NAMES.forEach((name,team)=>{
+    $("team"+team).classList.toggle("selected",r.selected===team);
+    $("details"+team).textContent=ROMAN.map(
+      (roman,index)=>`${roman}: ${rows[index][team]}`
+    ).join(" · ");
+    $("total"+team).textContent=
+      rows.reduce((sum,row)=>sum+row[team],0)+" ұпай";
+
+    const button=document.querySelector(`[data-team="${team}"]`);
+    button.disabled=!clock||r.closed||r.selected!==null||
+      r.wrong.includes(team)||state.completed;
+    button.textContent=r.wrong.includes(team)
+      ?"Бұл сұрақта жауап берді":"Бірінші жауап береді";
+  });
+
+  paint();
+}
+
+function tick(){
+  snapshot();
+  paint();
+  const seconds=Math.ceil(current().remaining);
+
+  if(seconds>0&&seconds<=5&&seconds!==lastBeep)tone(760,.1);
+  lastBeep=seconds;
+
+  if(current().remaining<=0){
+    finish(null,0,"Уақыт аяқталды. Дұрыс жауап төменде көрсетілді.");
+  }
+}
+
+function runTimer(){
+  const r=current();
+  if(clock||r.closed||r.selected!==null||state.completed)return;
+  if(r.remaining<=0){
+    finish(null,0,"Уақыт аяқталды.");
+    return;
+  }
+  r.started=true;
+  deadline=performance.now()+r.remaining*1000;
+  lastBeep=-1;
+  clock=setInterval(tick,100);
+  save();
+  render();
+  message("Сұрақ ашылды! Бірінші белгі берген топты таңдаңыз.");
+}
+
+function freeze(){
+  snapshot();
+  stopClock();
+  save();
+  render();
+}
+
+function finish(winner,points,text){
+  const r=current();
+  if(r.closed||state.completed)return;
+
+  stopClock();
+  r.started=true;
+  r.closed=true;
+  r.winner=winner;
+  r.points=points;
+  r.selected=null;
+  r.lockedPoints=0;
+  state.completed=state.records.every(record=>record.closed);
+
+  save();
+  render();
+  message(text,winner!==null);
+
+  if(winner!==null){
+    [523,659,784,1047].forEach((f,i)=>tone(f,.3,i*.1));
+  }else{
+    tone(240,.2);
+  }
+
+  if(state.completed)openResults();
+}
+
+$("start").onclick=runTimer;
+
+$("pause").onclick=()=>{
+  if(!clock)return;
+  freeze();
+  if(current().remaining<=0){
+    finish(null,0,"Уақыт аяқталды.");
+    return;
+  }
+  message("Уақыт кідіртілді. Дайын болғанда жалғастырыңыз.");
+};
+
+document.querySelectorAll("[data-team]").forEach(button=>{
+  button.onclick=()=>{
+    const team=Number(button.dataset.team);
+    const r=current();
+
+    if(!clock||r.closed||r.selected!==null||r.wrong.includes(team))return;
+
+    snapshot();
+    stopClock();
+
+    if(r.remaining<=0){
+      finish(null,0,"Уақыт аяқталды.");
+      return;
+    }
+
+    r.selected=team;
+    r.lockedPoints=pointsFor(r.remaining);
+    save();
+    render();
+    tone(620,.2);
+    message(
+      NAMES[team]+" жауап береді. Дұрыс жауапқа "+
+      r.lockedPoints+" ұпай беріледі."
+    );
+  };
+});
+
+$("correct").onclick=()=>{
+  const r=current();
+  if(r.closed||r.selected===null)return;
+
+  const praise=[
+    "Керемет! Білімдерің жарқырады!",
+    "Жарайсыңдар! Нағыз тапқыр команда!",
+    "Тамаша жауап! Алға!",
+    "Дәл таптыңдар! Өте жақсы!",
+    "Білім мен бірліктің жеңісі!"
+  ];
+
+  finish(
+    r.selected,r.lockedPoints,
+    praise[Math.floor(Math.random()*praise.length)]+
+    " "+NAMES[r.selected]+": +"+r.lockedPoints+" ұпай!"
+  );
+};
+
+$("wrong").onclick=()=>{
+  const r=current();
+  if(r.closed||r.selected===null)return;
+
+  r.wrong.push(r.selected);
+  r.selected=null;
+  r.lockedPoints=0;
+
+  if(r.wrong.length===3){
+    finish(null,0,"Үш команда да жауап берді. Дұрыс жауап төменде.");
+    return;
+  }
+
+  save();
+  runTimer();
+  message("Бұл жауап қабылданбады. Қалған командалар, мүмкіндікті пайдаланыңыздар!");
+};
+
+$("cancel").onclick=()=>{
+  const r=current();
+  if(r.closed||r.selected===null)return;
+  r.selected=null;
+  r.lockedPoints=0;
+  save();
+  render();
+  message("Таңдау қайтарылды. Уақытты жалғастыруға болады.");
+};
+
+$("reveal").onclick=()=>{
+  if(current().closed||state.completed)return;
+  freeze();
+
+  if(!confirm("Жауапты ашқанда осы сұраққа ұпай берілмейді. Ашамыз ба?")){
+    message("Уақыт кідіртілді. Жалғастыруға болады.");
+    return;
+  }
+
+  finish(null,0,"Жауап ашылды. Бұл сұраққа ұпай қосылмады.");
+};
+
+$("next").onclick=()=>{
+  if(state.completed)return;
+
+  if(!current().closed){
+    freeze();
+    if(!confirm("Осы сұрақты ұпайсыз өткізіп, келесіге өтеміз бе?"))return;
+    finish(null,0,"Сұрақ өткізілді.");
+    if(state.completed)return;
+  }
+
+  if(state.index<19){
+    state.index++;
+    save();
+    render();
+    message("Келесі сұраққа дайындалыңыздар!");
+  }
+};
+
+$("undo").onclick=()=>{
+  freeze();
+
+  if(!confirm(
+    "Осы сұрақтың ұпайын алып тастап, сұрақты қайта өткіземіз бе?"
+  ))return;
+
+  state.records[state.index]=freshRecord();
+  state.completed=false;
+  save();
+  render();
+  message("Осы сұрақ қайта бастауға дайын. Бұрынғы ұпайы алынып тасталды.");
+};
+
+$("reset").onclick=()=>{
+  freeze();
+  if(!confirm("V турдың барлық нәтижесін тазалаймыз ба?"))return;
+
+  state=fresh();
+  save();
+  render();
+  message("V тур қайта басталды.");
+};
+
+function addCell(row,value){
+  const cell=document.createElement("td");
+  cell.textContent=value;
+  row.appendChild(cell);
+}
+
+function addText(parent,tag,text,className=""){
+  const node=document.createElement(tag);
+  node.textContent=text;
+  if(className)node.className=className;
+  parent.appendChild(node);
+  return node;
+}
+
+function openResults(){
+  if(clock)freeze();
+
+  const rows=scoreRows();
+  const data=ledger();
+  const missing=[];
+
+  for(let round=1;round<=5;round++){
+    const complete=round===5
+      ?state.completed
+      :data.rounds["round"+round]?.completed===true;
+    if(!complete)missing.push(ROMAN[round-1]);
+  }
+
+  const final=missing.length===0;
+  const totals=NAMES.map((_,team)=>
+    rows.reduce((sum,row)=>sum+row[team],0)
+  );
+
+  const ranking=NAMES.map((name,team)=>({
+    name,team,total:totals[team],
+    place:1+totals.filter(total=>total>totals[team]).length
+  })).sort((a,b)=>b.total-a.total||a.team-b.team);
+
+  $("resultsTitle").textContent=final
+    ?"ҚҰТТЫҚТАЙМЫЗ! ОЙ БӘЙГЕСІ АЯҚТАЛДЫ!"
+    :"Ой бәйгесі — ағымдағы нәтиже";
+
+  $("completionNotice").textContent=final
+    ?"Бес тур аяқталды. Ұпайы тең командалар бірдей орын алады."
+    :"Аяқталғаны белгіленбеген турлар: "+missing.join(", ")+
+      ". Дипломдар әзірге алдын ала үлгі ретінде көрсетіледі. "+
+      "Алдыңғы турлардың соңындағы аяқтау батырмаларын тексеріңіз.";
+
+  $("resultsBody").replaceChildren();
+  $("diplomas").replaceChildren();
+
+  ranking.forEach(entry=>{
+    const row=document.createElement("tr");
+
+    [
+      entry.place,entry.name,
+      ...rows.map(scores=>scores[entry.team]),entry.total
+    ].forEach(value=>addCell(row,value));
+
+    $("resultsBody").appendChild(row);
+
+    if(!state.completed)return;
+
+    const diploma=document.createElement("article");
+    diploma.className="diploma";
+
+    addText(diploma,"div",
+      entry.place===1?"🏆":entry.place===2?"🥈":"🥉","medal");
+    addText(diploma,"p","ОЙ БӘЙГЕСІ");
+    addText(diploma,"h3",final?"ДИПЛОМ":"АЛДЫН АЛА ҮЛГІ");
+    addText(diploma,"p","Интеллектуалды сайыс");
+    addText(diploma,"h4","«"+entry.name+"» командасы");
+    addText(diploma,"p","Білімін, тапқырлығын және командалық бірлігін көрсетіп,");
+    addText(diploma,"b",entry.place+"-ОРЫН");
+    addText(diploma,"p","иеленгені үшін марапатталады.");
+    addText(diploma,"div",entry.total+" ұпай","sum");
+    addText(
+      diploma,"p",
+      ROMAN.map((roman,index)=>
+        roman+" тур: "+rows[index][entry.team]
+      ).join(" · ")
+    );
+    addText(diploma,"small",
+      "5–7-сыныптар · Білім • Бірлік • Жеңіс");
+
+    $("diplomas").appendChild(diploma);
+  });
+
+  $("print").hidden=!state.completed;
+  if(!$("resultsDialog").open)$("resultsDialog").showModal();
+}
+
+$("results").onclick=openResults;
+$("closeResults").onclick=()=>$("resultsDialog").close();
+$("print").onclick=()=>window.print();
+
+$("sound").onclick=async()=>{
+  soundEnabled=!soundEnabled;
+  $("sound").textContent="♫ "+(soundEnabled?"Қосулы":"Өшірулі");
+  $("sound").setAttribute("aria-pressed",String(soundEnabled));
+
+  if(!soundEnabled)return;
+
+  try{
+    const Audio=window.AudioContext||window.webkitAudioContext;
+    if(!Audio)throw new Error("audio");
+    if(!audioContext)audioContext=new Audio();
+    await audioContext.resume();
+    tone(660,.25);
+  }catch(error){
+    soundEnabled=false;
+    $("sound").textContent="♫ Өшірулі";
+    $("sound").setAttribute("aria-pressed","false");
+    message("Браузер дыбысты қоса алмады. Дыбыс рұқсатын тексеріңіз.");
+  }
+};
+
+$("fullscreen").onclick=async()=>{
+  try{
+    if(document.fullscreenElement)await document.exitFullscreen();
+    else await document.documentElement.requestFullscreen();
+  }catch(error){
+    message("Толық экранды браузер мәзірінен қосыңыз.");
+  }
+};
+
+document.addEventListener("visibilitychange",()=>{
+  if(document.hidden&&clock){
+    freeze();
+    message("Басқа бетке ауысқандықтан уақыт кідіртілді.");
+  }
+});
+
+window.addEventListener("pagehide",()=>{
+  snapshot();
+  stopClock();
+  save();
+});
+
+render();
+
+if(state.completed){
+  openResults();
+}else{
+  message(current().selected!==null
+    ?"Таңдалған топтың жауабын бағалаңыз."
+    :"Алтын финалға қош келдіңіздер! Дайын болғанда сұрақты ашыңыз.");
+}
+</script>
+</body>
+</html>
