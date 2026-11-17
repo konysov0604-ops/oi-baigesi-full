@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="kk" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="google" content="notranslate">
+<title>II тур — Құпия сейф</title>
+
+<style>
+*{box-sizing:border-box}
+:root{
+  --gold:#ffda88;
+  --cream:#fff3d9;
+  --cyan:#72e5ff;
+  --purple:#d6a1ff;
+}
+body{
+  margin:0;
+  min-height:100vh;
+  color:var(--cream);
+  font-family:"Segoe UI",Arial,sans-serif;
+  background:
+    linear-gradient(#04102588,#041025dd),
+    url("stage.png") center/cover fixed no-repeat;
+  background-color:#06152c;
+}
+button{font:inherit;cursor:pointer}
+button:disabled{opacity:.4;cursor:default}
+button:focus-visible,a:focus-visible{
+  outline:3px solid white;outline-offset:4px
+}
+main{width:min(1300px,95%);margin:auto;padding:20px 0}
+header{
+  display:flex;justify-content:space-between;
+  align-items:center;flex-wrap:wrap;gap:13px;
+  border-bottom:1px solid #c9a36777;padding-bottom:17px
+}
+a{color:var(--gold)}
+.brand{
+  text-decoration:none;letter-spacing:2px;font-weight:800
+}
+h1{
+  margin:0;font-family:Georgia,serif;
+  color:var(--gold);font-size:clamp(25px,3.5vw,42px)
+}
+.tools{display:flex;gap:8px;align-items:center}
+.ghost,.primary{
+  padding:11px 15px;border-radius:11px;font-weight:700
+}
+.ghost{
+  background:#091c35ef;color:#f4d8a0;
+  border:1px solid #c9a26788
+}
+.primary{
+  color:#3d220c;border:1px solid #ffedb7;
+  background:linear-gradient(135deg,#ffeab4,#dda03a)
+}
+.turn{
+  width:fit-content;max-width:100%;
+  margin:18px auto;text-align:center;
+  padding:10px 23px;border-radius:30px;
+  background:#07182eef;border:1px solid var(--gold);
+  color:var(--gold);font-size:18px;font-weight:800
+}
+.workspace{
+  display:grid;grid-template-columns:1fr 1.1fr;
+  gap:20px;align-items:start
+}
+.safe{
+  padding:20px;border:5px solid #947d59;
+  border-radius:23px;
+  background:
+    linear-gradient(125deg,#51606c,#121d2d 30%,#334352 70%,#111c2b);
+  box-shadow:
+    inset 0 0 0 2px #d5b77a,
+    inset 0 0 25px #000b,
+    0 15px 40px #0006
+}
+.safe-title{
+  text-align:center;color:#ffe1a2;
+  font-size:13px;letter-spacing:2px;margin-bottom:16px
+}
+.grid{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:10px
+}
+.door{
+  --accent:#d0ab69;
+  position:relative;aspect-ratio:1/1;
+  border:2px solid var(--accent);border-radius:12px;
+  background:linear-gradient(135deg,#31445c,#091629 65%,#263549);
+  color:#ffe0a1;font-size:clamp(22px,3vw,38px);
+  font-family:Georgia,serif;font-weight:700;
+  box-shadow:inset 0 0 0 4px #0004,0 4px 8px #0006
+}
+.door::after{
+  content:"▣";display:block;font-family:Arial,sans-serif;
+  font-size:15px;color:#d6b576;margin-top:3px
+}
+.door.active{--accent:#72e5ff;box-shadow:0 0 17px #72e5ff88}
+.door.correct{background:linear-gradient(135deg,#74622d,#193e36)}
+.door.correct::after{content:"✓";color:#d9ffbc}
+.door.failed::after{content:"×";color:#ffb7a8}
+.door.shared{border-style:dashed}
+.door:disabled{opacity:.65}
+.door.correct:disabled{opacity:1}
+.safe-note{
+  font-size:11px;color:#d5c6ad;line-height:1.8;
+  text-align:center;margin:16px 0 0
+}
+.panel{
+  padding:23px;border:1px solid #d9b16b;
+  border-radius:20px;
+  background:linear-gradient(135deg,#142c49f5,#07142af5);
+  min-height:470px
+}
+.task-head{
+  display:flex;justify-content:space-between;
+  align-items:center;gap:12px;margin-bottom:16px
+}
+.subject{
+  display:inline-block;padding:7px 12px;
+  border:1px solid #ba985e;border-radius:25px;
+  color:#ffdea0;font-size:12px
+}
+.timer-box{text-align:center;min-width:90px}
+.timer-box b{
+  display:block;color:#ffda88;
+  font-size:36px;font-variant-numeric:tabular-nums
+}
+.timer-box small{font-size:11px;color:#dfc293}
+.task-title{
+  font-size:clamp(20px,2.4vw,29px);
+  line-height:1.45;margin:0 0 12px;color:#fff0d0
+}
+.help{font-size:13px;color:#d8c6aa;line-height:1.8}
+.match{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:13px;margin-top:20px
+}
+.column{display:grid;gap:10px}
+.source,.target{
+  width:100%;min-height:76px;padding:12px;
+  border:1px solid #b99b6877;border-radius:12px;
+  background:#10263fee;color:#f7ead3;
+  text-align:center;line-height:1.5;font-size:14px
+}
+.source.selected{
+  border-color:#ffdb8a;
+  box-shadow:0 0 17px #ffd16a44;
+  background:#59482688
+}
+.source.assigned{border-color:#65c2d4}
+.target{border-style:dashed}
+.target.filled{border-style:solid;background:#153c4c}
+.target .assigned-label{
+  display:block;color:#8eeafa;font-size:12px;
+  margin-top:7px;padding-top:7px;border-top:1px solid #ffffff22
+}
+.actions{
+  display:flex;flex-wrap:wrap;gap:9px;margin-top:20px
+}
+.claim{
+  display:flex;flex-wrap:wrap;gap:7px;margin:15px 0
+}
+.claim button{flex:1;font-size:12px}
+.proof{
+  margin-top:18px;padding:15px;border-radius:12px;
+  border:1px solid #b8cf91;background:#263c2c;
+  color:#e7ffda;line-height:1.8;font-size:13px
+}
+.banner{
+  padding:15px 20px;margin:19px 0;
+  border:1px solid #c6a36477;border-radius:13px;
+  background:#091c34f2;line-height:1.8;text-align:center
+}
+.banner.success{
+  background:#3a321bf0;border-color:#ffdf8f;color:#fff0b7
+}
+.teams{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:14px
+}
+.team{
+  --accent:#ffd474;
+  padding:17px;border:1px solid var(--accent);
+  border-radius:16px;background:#0b1e36f5
+}
+.team:nth-child(2){--accent:#72e5ff}
+.team:nth-child(3){--accent:#d6a1ff}
+.team.active{
+  box-shadow:0 0 20px color-mix(
+    in srgb,var(--accent) 35%,transparent
+  )
+}
+.team h2{
+  font-size:18px;color:var(--accent);margin:0 0 10px
+}
+.team p{margin:5px 0;color:#d4c7b1;font-size:12px}
+.team strong{font-size:23px;color:#fff1d2}
+footer{
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;margin-top:22px;
+  font-size:12px;color:#c8b491
+}
+dialog{
+  width:min(900px,94vw);padding:24px;border-radius:20px;
+  background:#091b33;color:#fff1d3;border:1px solid #d8b16e
+}
+dialog::backdrop{background:#000b;backdrop-filter:blur(5px)}
+dialog h2{color:var(--gold);margin-top:0}
+.table-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;margin:20px 0;font-size:13px}
+th,td{
+  padding:11px 9px;text-align:center;
+  border:1px solid #c6aa7155;white-space:nowrap
+}
+th{background:#19334f;color:#ffdf9f}
+#warning{
+  margin-bottom:15px;padding:13px;background:#653520;
+  color:#ffedc6;border-radius:10px
+}
+[hidden]{display:none!important}
+@media(max-width:900px){
+  .workspace{grid-template-columns:1fr}
+  .safe{max-width:650px;width:100%;margin:auto}
+  .door{aspect-ratio:1.2/1}
+}
+@media(max-width:550px){
+  header{justify-content:center}
+  h1{width:100%;text-align:center}
+  .grid{gap:7px}
+  .safe{padding:13px}
+  .door{font-size:24px;border-radius:9px}
+  .panel{padding:16px}
+  .match{gap:8px}
+  .source,.target{padding:9px;font-size:12px;min-height:78px}
+  .teams{gap:7px}
+  .team{padding:13px 8px}
+  .team h2{font-size:12px}
+  .team strong{font-size:20px}
+  .turn{font-size:15px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+
+<body>
+<main>
+  <div id="warning" role="status" hidden></div>
+
+  <header>
+    <a class="brand" href="index.html">ОЙ БӘЙГЕСІ</a>
+    <h1>II ТУР · ҚҰПИЯ СЕЙФ</h1>
+    <div class="tools">
+      <button class="ghost" id="sound" aria-pressed="false">
+        ♫ Дыбыс: өшірулі
+      </button>
+      <button class="ghost" id="fullscreen"
+              aria-label="Толық экран">⛶</button>
+    </div>
+  </header>
+
+  <div class="turn" id="turn"></div>
+
+  <div class="workspace">
+    <section class="safe" aria-label="Тапсырма ұяшықтары">
+      <div class="safe-title">БІЛІМ КІЛТІМЕН АШ</div>
+      <div class="grid" id="grid"></div>
+      <p class="safe-note">
+        01–18 — кезектескен тапсырмалар.<br>
+        19–20 — үш командаға ортақ жарыс.
+      </p>
+    </section>
+
+    <section class="panel">
+      <div id="welcome">
+        <span class="subject">СӘЙКЕСТЕНДІРУ</span>
+        <h2 class="task-title" style="margin-top:20px">
+          Қай сейфті ашамыз?
+        </h2>
+        <p class="help">
+          Кезегі келген топтың өкілі жабық ұяшықты таңдайды.
+          Жүргізуші тапсырманы оқиды.
+        </p>
+        <p class="help">
+          Таймер басталған соң сол жақтағы нысанды,
+          кейін оның оң жақтағы жұбын басыңыз.
+          Үш жұп дайын болғанда «Тексеру» басыңыз.
+        </p>
+        <p class="help">
+          20 секунд — 10 ұпай.
+          Әр 2 секунд өткен сайын мүмкін ұпай біреуге азаяды.
+        </p>
+      </div>
+
+      <div id="task" hidden>
+        <div class="task-head">
+          <span class="subject" id="subject"></span>
+          <div class="timer-box">
+            <b id="seconds">20</b>
+            <small id="points">10 ұпай</small>
+          </div>
+        </div>
+
+        <h2 class="task-title" id="taskTitle"></h2>
+
+        <p class="help" id="taskHelp">
+          Алдымен сол жақтағы нысанды, кейін оң жақтағы жұбын басыңыз.
+        </p>
+
+        <div class="claim" id="claim" hidden>
+          <button class="ghost" data-claim="0">Импульс</button>
+          <button class="ghost" data-claim="1">Квант</button>
+          <button class="ghost" data-claim="2">Нова</button>
+        </div>
+
+        <div class="match">
+          <div class="column" id="sources"></div>
+          <div class="column" id="targets"></div>
+        </div>
+
+        <div class="actions">
+          <button class="primary" id="start">
+            ▶ 20 секундты бастау
+          </button>
+          <button class="ghost" id="pause" disabled>
+            Ⅱ Кідірту
+          </button>
+          <button class="primary" id="check" disabled>
+            Жауапты тексеру
+          </button>
+          <button class="ghost" id="skip">
+            Тапсырманы өткізу
+          </button>
+          <button class="primary" id="back" hidden>
+            Ұяшықтарға оралу →
+          </button>
+        </div>
+
+        <div class="proof" id="proof" hidden></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="banner" id="banner"
+       role="status" aria-live="polite"></div>
+
+  <section class="teams">
+    <article class="team" id="team0">
+      <h2>ϟ ИМПУЛЬС</h2>
+      <p id="details0"></p>
+      <strong id="total0">Барлығы: 0</strong>
+    </article>
+    <article class="team" id="team1">
+      <h2>⚛ КВАНТ</h2>
+      <p id="details1"></p>
+      <strong id="total1">Барлығы: 0</strong>
+    </article>
+    <article class="team" id="team2">
+      <h2>✦ НОВА</h2>
+      <p id="details2"></p>
+      <strong id="total2">Барлығы: 0</strong>
+    </article>
+  </section>
+
+  <footer>
+    <a href="round1.html">← I тур</a>
+    <span id="progress"></span>
+    <button class="ghost" id="results">Жалпы ұпай кестесі</button>
+    <button class="ghost" id="reset">II турды қайта бастау</button>
+  </footer>
+</main>
+
+<dialog id="resultsDialog">
+  <h2 id="resultsTitle">Жалпы ұпай кестесі</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Команда</th>
+          <th>I</th><th>II</th><th>III</th><th>IV</th><th>V</th>
+          <th>Барлығы</th>
+        </tr>
+      </thead>
+      <tbody id="resultsBody"></tbody>
+    </table>
+  </div>
+  <button class="ghost" id="closeResults">Жабу</button>
+</dialog>
+
+<script>
+const TASKS = [
+  {
+    subject:"Жаратылыстану",
+    title:"Аспан денелерін түрлерімен сәйкестендір",
+    pairs:[
+      ["☀ Күн","Жұлдыз"],
+      ["🌍 Жер","Ғаламшар"],
+      ["🌙 Ай","Жердің табиғи серігі"]
+    ]
+  },
+  {
+    subject:"Математика",
+    title:"Бөлшектерді ондық жазылуымен сәйкестендір",
+    pairs:[
+      ["1/2","0,5"],
+      ["1/4","0,25"],
+      ["3/4","0,75"]
+    ]
+  },
+  {
+    subject:"Алгебра",
+    title:"Теңдеулерді шешімдерімен сәйкестендір",
+    pairs:[
+      ["x + 3 = 8","x = 5"],
+      ["x − 2 = 2","x = 4"],
+      ["2x = 12","x = 6"]
+    ]
+  },
+  {
+    subject:"Геометрия",
+    title:"Фигураларды қабырғалар санымен сәйкестендір",
+    pairs:[
+      ["Үшбұрыш","3 қабырға"],
+      ["Төртбұрыш","4 қабырға"],
+      ["Алтыбұрыш","6 қабырға"]
+    ]
+  },
+  {
+    subject:"Қазақ тілі",
+    title:"Сөздерді сөз таптарымен сәйкестендір",
+    pairs:[
+      ["Кітап","Зат есім"],
+      ["Әдемі","Сын есім"],
+      ["Жүгірді","Етістік"]
+    ]
+  },
+  {
+    subject:"Қазақ әдебиеті",
+    title:"Әдеби түрлерді сипаттамаларымен сәйкестендір",
+    pairs:[
+      ["Мысал","Астарлап ғибрат беретін шығарма"],
+      ["Ертегі","Қиял-ғажайып оқиғаға құрылуы мүмкін әңгіме"],
+      ["Мақал","Түйінді ойды ықшам жеткізетін нақыл"]
+    ]
+  },
+  {
+    subject:"Орыс тілі",
+    title:"Соотнесите слова с частями речи",
+    pairs:[
+      ["Школа","Имя существительное"],
+      ["Солнечный","Имя прилагательное"],
+      ["Читать","Глагол"]
+    ]
+  },
+  {
+    subject:"Орыс әдебиеті",
+    title:"Соотнесите литературные понятия с определениями",
+    pairs:[
+      ["Рифма","Созвучие окончаний строк"],
+      ["Персонаж","Действующее лицо произведения"],
+      ["Сюжет","Последовательность событий произведения"]
+    ]
+  },
+  {
+    subject:"Ағылшын тілі",
+    title:"Ағылшын сөздерін аудармаларымен сәйкестендір",
+    pairs:[
+      ["Library","Кітапхана"],
+      ["Teacher","Мұғалім"],
+      ["Autumn","Күз"]
+    ]
+  },
+  {
+    subject:"Қазақстан тарихы",
+    title:"Зерттеушіні зерттеу нысанымен сәйкестендір",
+    pairs:[
+      ["Археолог","Қазба заттары мен ескерткіштер"],
+      ["Тарихшы","Өткен оқиғалар туралы деректер"],
+      ["Этнограф","Халықтың тұрмысы мен дәстүрлері"]
+    ]
+  },
+  {
+    subject:"Дүниежүзі тарихы",
+    title:"Ежелгі өркениеттерді белгілі нысандармен сәйкестендір",
+    pairs:[
+      ["Ежелгі Мысыр","Пирамидалар"],
+      ["Ежелгі Рим","Колизей"],
+      ["Ежелгі Грекия","Ежелгі Олимпиада ойындары"]
+    ]
+  },
+  {
+    subject:"География",
+    title:"Нысандарды сипаттамаларымен сәйкестендір",
+    pairs:[
+      ["Тынық мұхиты","Ауданы ең үлкен мұхит"],
+      ["Антарктида","Оңтүстік полюс орналасқан материк"],
+      ["Экватор","Жерді Солтүстік және Оңтүстік жартышарларға бөледі"]
+    ]
+  },
+  {
+    subject:"Биология",
+    title:"Мүшелерді негізгі қызметтерімен сәйкестендір",
+    pairs:[
+      ["Жүрек","Қанды айдау"],
+      ["Өкпе","Газ алмасу"],
+      ["Асқазан","Асты араластыру және қорытуға қатысу"]
+    ]
+  },
+  {
+    subject:"Физика",
+    title:"Физикалық шамаларды SI бірліктерімен сәйкестендір",
+    pairs:[
+      ["Ұзындық","Метр"],
+      ["Масса","Килограмм"],
+      ["Уақыт","Секунд"]
+    ]
+  },
+  {
+    subject:"Химия",
+    title:"Элементтерді химиялық таңбаларымен сәйкестендір",
+    pairs:[
+      ["Сутек","H"],
+      ["Оттек","O"],
+      ["Көміртек","C"]
+    ]
+  },
+  {
+    subject:"Информатика",
+    title:"Құрылғыларды қызметтерімен сәйкестендір",
+    pairs:[
+      ["Пернетақта","Мәтін енгізу"],
+      ["Монитор","Ақпаратты экранда көрсету"],
+      ["Принтер","Ақпаратты қағазға басу"]
+    ]
+  },
+  {
+    subject:"Музыка",
+    title:"Аспаптарды ойнау тәсілдерімен сәйкестендір",
+    pairs:[
+      ["Домбыра","Ішегін шертіп ойнау"],
+      ["Қобыз","Ысқышпен ойнау"],
+      ["Сыбызғы","Үрлеп ойнау"]
+    ]
+  },
+  {
+    subject:"Көркем еңбек",
+    title:"Дәстүрлі бояу қоспаларын нәтижелерімен сәйкестендір",
+    pairs:[
+      ["Сары + көк","Жасыл"],
+      ["Қызыл + сары","Қызғылт сары"],
+      ["Қызыл + көк","Күлгін"]
+    ]
+  },
+  {
+    subject:"Дене шынықтыру · Ортақ жарыс",
+    title:"Спортты алаңдағы бір команданың ойыншылар санымен сәйкестендір",
+    pairs:[
+      ["Классикалық волейбол","6 ойыншы"],
+      ["Баскетбол","5 ойыншы"],
+      ["Үлкен футбол","11 ойыншы"]
+    ]
+  },
+  {
+    subject:"Логика · Ортақ жарыс",
+    title:"Қатарларды келесі санымен сәйкестендір",
+    pairs:[
+      ["2, 4, 8, …","16"],
+      ["3, 6, 9, …","12"],
+      ["1, 3, 5, …","7"]
+    ]
+  }
+];
+
+const $ = id=>document.getElementById(id);
+const NAMES = ["ИМПУЛЬС","КВАНТ","НОВА"];
+const COLORS = ["#ffd474","#72e5ff","#d6a1ff"];
+const KEY = "oi-baigesi-full-safe-round2-v1";
+const LEDGER_KEY = "oi-baigesi-full-results-v1";
+
+function shuffle(array){
+  const result=[...array];
+  for(let i=result.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [result[i],result[j]]=[result[j],result[i]];
+  }
+  return result;
+}
+
+function fresh(){
+  return {
+    active:null,
+    records:TASKS.map(()=>({
+      owner:null,
+      pairs:[null,null,null],
+      sourceOrder:shuffle([0,1,2]),
+      targetOrder:shuffle([0,1,2]),
+      remaining:20,
+      started:false,
+      closed:false,
+      points:0,
+      outcome:null
+    }))
+  };
+}
+
+let state=fresh();
+
+function isOrder(a){
+  return Array.isArray(a)&&a.length===3&&
+    [...a].sort().join(",")==="0,1,2";
+}
+
+try{
+  const saved=JSON.parse(localStorage.getItem(KEY));
+  if(
+    saved &&
+    (saved.active===null ||
+      Number.isInteger(saved.active)&&saved.active>=0&&saved.active<20) &&
+    Array.isArray(saved.records)&&saved.records.length===20 &&
+    saved.records.every(r=>
+      r &&
+      (r.owner===null||[0,1,2].includes(r.owner)) &&
+      Array.isArray(r.pairs)&&r.pairs.length===3 &&
+      r.pairs.every(n=>n===null||[0,1,2].includes(n)) &&
+      new Set(r.pairs.filter(n=>n!==null)).size===
+        r.pairs.filter(n=>n!==null).length &&
+      isOrder(r.sourceOrder)&&isOrder(r.targetOrder) &&
+      Number.isFinite(r.remaining)&&r.remaining>=0&&r.remaining<=20 &&
+      typeof r.started==="boolean" &&
+      typeof r.closed==="boolean" &&
+      Number.isInteger(r.points)&&r.points>=0&&r.points<=10 &&
+      [null,"correct","wrong","timeout","skipped"].includes(r.outcome)
+    )
+  )state=saved;
+}catch(error){}
+
+let clock=null;
+let deadline=0;
+let selectedSource=null;
+let lastBeep=-1;
+let soundEnabled=false;
+let audioContext;
+
+const record=()=>state.active===null?null:state.records[state.active];
+const finishedCount=()=>state.records.filter(r=>r.closed).length;
+const ordinaryCount=()=>state.records.slice(0,18).filter(r=>r.closed).length;
+const pointsFor=s=>Math.min(10,Math.max(0,Math.ceil(s/2)));
+
+function score2(team){
+  return state.records.reduce(
+    (sum,r)=>sum+(r.owner===team&&r.closed?r.points:0),0
+  );
+}
+
+function readLedger(){
+  try{
+    const ledger=JSON.parse(localStorage.getItem(LEDGER_KEY));
+    if(ledger&&ledger.version===1&&ledger.rounds&&
+      typeof ledger.rounds==="object"&&!Array.isArray(ledger.rounds)){
+      return ledger;
+    }
+  }catch(error){}
+  return {version:1,rounds:{}};
+}
+
+function allScores(){
+  const ledger=readLedger();
+  const scores=[];
+
+  for(let round=1;round<=5;round++){
+    const values=ledger.rounds["round"+round]?.scores;
+    scores.push(
+      Array.isArray(values)&&values.length===3&&
+      values.every(n=>Number.isFinite(n)&&n>=0)
+        ? values:[0,0,0]
+    );
+  }
+
+  scores[1]=NAMES.map((name,team)=>score2(team));
+  return scores;
+}
+
+function save(){
+  try{
+    localStorage.setItem(KEY,JSON.stringify(state));
+    const ledger=readLedger();
+    ledger.rounds.round2={
+      scores:NAMES.map((name,team)=>score2(team)),
+      completed:finishedCount()===20
+    };
+    localStorage.setItem(LEDGER_KEY,JSON.stringify(ledger));
+  }catch(error){
+    $("warning").hidden=false;
+    $("warning").textContent=
+      "Нәтиже сақталмады. Бетті жаппай, ұпайларды жазып алыңыз.";
+  }
+}
+
+function stopClock(){
+  clearInterval(clock);
+  clock=null;
+}
+
+function snapshot(){
+  if(clock&&record()){
+    record().remaining=Math.max(
+      0,(deadline-performance.now())/1000
+    );
+  }
+}
+
+function message(text,success=false){
+  $("banner").textContent=text;
+  $("banner").classList.toggle("success",success);
+}
+
+async function unlock(){
+  if(!soundEnabled)return;
+  try{
+    const Audio=window.AudioContext||window.webkitAudioContext;
+    if(!Audio)return;
+    if(!audioContext)audioContext=new Audio();
+    await audioContext.resume();
+  }catch(error){}
+}
+
+function tone(frequency,duration=.2,delay=0){
+  if(!soundEnabled||!audioContext||
+    audioContext.state!=="running"||document.hidden)return;
+
+  const time=audioContext.currentTime+delay;
+  const oscillator=audioContext.createOscillator();
+  const gain=audioContext.createGain();
+
+  oscillator.frequency.value=frequency;
+  gain.gain.setValueAtTime(0,time);
+  gain.gain.linearRampToValueAtTime(.035,time+.02);
+  gain.gain.exponentialRampToValueAtTime(.0001,time+duration);
+
+  oscillator.connect(gain);
+  gain.connect(audioContext.destination);
+  oscillator.start(time);
+  oscillator.stop(time+duration+.04);
+
+  oscillator.onended=()=>{
+    oscillator.disconnect();
+    gain.disconnect();
+  };
+}
+
+function updateScores(){
+  const scores=allScores();
+
+  for(let team=0;team<3;team++){
+    $("details"+team).textContent=
+      `I тур: ${scores[0][team]} · II тур: ${scores[1][team]}`;
+
+    $("total"+team).textContent=
+      "Барлығы: "+scores.reduce((sum,row)=>sum+row[team],0);
+  }
+}
+
+function updateTurn(){
+  const r=record();
+  let text;
+  let team=null;
+
+  if(finishedCount()===20){
+    text="II ТУР АЯҚТАЛДЫ";
+  }else if(r){
+    team=r.owner;
+    text=team===null
+      ?"ОРТАҚ ЖАРЫС — БІРІНШІ БЕЛГІ БЕРГЕН ТОП"
+      :"Кезек: "+NAMES[team];
+  }else if(ordinaryCount()<18){
+    team=ordinaryCount()%3;
+    text="Кезек: "+NAMES[team];
+  }else{
+    text="СОҢҒЫ ЕКІ ТАПСЫРМА — ОРТАҚ ЖАРЫС";
+  }
+
+  $("turn").textContent=text;
+  $("turn").style.color=team===null?"#ffda88":COLORS[team];
+  $("turn").style.borderColor=team===null?"#ffda88":COLORS[team];
+
+  document.querySelectorAll(".team").forEach((card,index)=>{
+    card.classList.toggle("active",index===team);
+  });
+}
+
+function renderGrid(){
+  $("grid").replaceChildren();
+
+  state.records.forEach((r,index)=>{
+    const button=document.createElement("button");
+    button.className="door";
+    button.textContent=String(index+1).padStart(2,"0");
+    button.setAttribute("aria-label","Ұяшық "+(index+1));
+
+    if(index>=18)button.classList.add("shared");
+    if(state.active===index)button.classList.add("active");
+    if(r.closed){
+      button.classList.add(r.outcome==="correct"?"correct":"failed");
+      if(r.owner!==null){
+        button.style.setProperty("--accent",COLORS[r.owner]);
+      }
+    }
+
+    button.disabled=
+      state.active!==null||r.closed||
+      (index>=18&&ordinaryCount()<18);
+
+    button.onclick=()=>openTask(index);
+    $("grid").appendChild(button);
+  });
+
+  $("progress").textContent=
+    `Аяқталған тапсырма: ${finishedCount()} / 20`;
+}
+
+function timerPaint(){
+  const r=record();
+  if(!r)return;
+
+  $("seconds").textContent=Math.ceil(r.remaining);
+  $("points").textContent=
+    (r.closed?r.points:pointsFor(r.remaining))+" ұпай";
+}
+
+function renderPairs(){
+  const r=record();
+  if(!r)return;
+
+  const task=TASKS[state.active];
+  const playable=Boolean(clock)&&r.owner!==null&&!r.closed;
+
+  $("sources").replaceChildren();
+  $("targets").replaceChildren();
+
+  r.sourceOrder.forEach(index=>{
+    const button=document.createElement("button");
+    button.className="source";
+    button.textContent=task.pairs[index][0];
+
+    button.classList.toggle("selected",selectedSource===index);
+    button.classList.toggle("assigned",r.pairs[index]!==null);
+    button.setAttribute("aria-pressed",String(selectedSource===index));
+    button.disabled=!playable;
+
+    button.onclick=()=>{
+      if(!clock||r.closed||r.owner===null)return;
+      selectedSource=index;
+      renderPairs();
+    };
+
+    $("sources").appendChild(button);
+  });
+
+  r.targetOrder.forEach(target=>{
+    const button=document.createElement("button");
+    button.className="target";
+    button.textContent=task.pairs[target][1];
+    button.disabled=!playable;
+
+    const assigned=r.pairs.findIndex(value=>value===target);
+
+    if(assigned!==-1){
+      button.classList.add("filled");
+      const label=document.createElement("span");
+      label.className="assigned-label";
+      label.textContent="← "+task.pairs[assigned][0];
+      button.appendChild(label);
+    }
+
+    button.onclick=()=>{
+      if(!clock||r.closed||r.owner===null)return;
+
+      snapshot();
+      if(r.remaining<=0){
+        finishTask("timeout",0);
+        return;
+      }
+
+      if(selectedSource===null){
+        message("Алдымен сол жақтағы нысанды таңдаңыз.");
+        return;
+      }
+
+      for(let i=0;i<3;i++){
+        if(r.pairs[i]===target)r.pairs[i]=null;
+      }
+
+      r.pairs[selectedSource]=target;
+      selectedSource=null;
+      save();
+      renderPairs();
+      tone(620,.09);
+    };
+
+    $("targets").appendChild(button);
+  });
+}
+
+function controls(){
+  const r=record();
+  if(!r)return;
+
+  $("start").hidden=r.closed;
+  $("pause").hidden=r.closed;
+  $("check").hidden=r.closed;
+  $("skip").hidden=r.closed;
+  $("back").hidden=!r.closed;
+
+  $("start").disabled=Boolean(clock);
+  $("start").textContent=r.started
+    ?"▶ Уақытты жалғастыру"
+    :"▶ 20 секундты бастау";
+
+  $("pause").disabled=!clock;
+  $("check").disabled=!clock||r.owner===null;
+
+  $("claim").hidden=state.active<18||r.closed||r.owner!==null;
+
+  document.querySelectorAll("[data-claim]").forEach(button=>{
+    button.disabled=!clock||r.owner!==null||r.closed;
+  });
+
+  $("taskHelp").textContent=r.closed
+    ?"Тапсырма аяқталды. Дұрыс жұптар төменде көрсетілді."
+    :state.active>=18&&r.owner===null
+      ?"Таймерді бастаңыз. Бірінші белгі берген топты жүргізуші таңдайды."
+      :"Алдымен сол жақтағы нысанды, кейін оң жақтағы жұбын басыңыз.";
+
+  timerPaint();
+  renderPairs();
+}
+
+function showProof(){
+  const r=record();
+  $("proof").hidden=!r?.closed;
+  if(!r?.closed)return;
+
+  $("proof").replaceChildren();
+
+  const heading=document.createElement("strong");
+  heading.textContent="Дұрыс сәйкестіктер:";
+  $("proof").appendChild(heading);
+
+  TASKS[state.active].pairs.forEach(pair=>{
+    const line=document.createElement("div");
+    line.textContent=pair[0]+" → "+pair[1];
+    $("proof").appendChild(line);
+  });
+}
+
+function renderTask(){
+  const r=record();
+  $("welcome").hidden=Boolean(r);
+  $("task").hidden=!r;
+  if(!r)return;
+
+  $("subject").textContent=
+    String(state.active+1).padStart(2,"0")+" · "+
+    TASKS[state.active].subject;
+
+  $("taskTitle").textContent=TASKS[state.active].title;
+
+  controls();
+  showProof();
+}
+
+function render(){
+  renderGrid();
+  renderTask();
+  updateTurn();
+  updateScores();
+}
+
+function openTask(index){
+  if(state.active!==null||state.records[index].closed)return;
+  if(index>=18&&ordinaryCount()<18)return;
+
+  state.active=index;
+  const r=record();
+
+  if(index<18)r.owner=ordinaryCount()%3;
+  selectedSource=null;
+
+  save();
+  render();
+
+  message(index<18
+    ?NAMES[r.owner]+": тапсырманы оқып алыңыз. Дайын болғанда таймерді бастаңыз."
+    :"Ортақ жарыс! Алдымен тапсырманы оқыңыз, содан кейін таймерді бастаңыз."
+  );
+}
+
+function tick(){
+  snapshot();
+  timerPaint();
+
+  const second=Math.ceil(record().remaining);
+
+  if(second>0&&second<=5&&second!==lastBeep){
+    tone(700,.1);
+  }
+
+  lastBeep=second;
+
+  if(record().remaining<=0)finishTask("timeout",0);
+}
+
+function startTimer(){
+  const r=record();
+  if(!r||r.closed||clock)return;
+
+  if(r.remaining<=0){
+    finishTask("timeout",0);
+    return;
+  }
+
+  r.started=true;
+  deadline=performance.now()+r.remaining*1000;
+  lastBeep=-1;
+  clock=setInterval(tick,100);
+
+  save();
+  controls();
+
+  message(r.owner===null
+    ?"Бірінші белгі берген топты жүргізуші таңдасын."
+    :NAMES[r.owner]+": үш жұпты сәйкестендіріңіз!"
+  );
+}
+
+function finishTask(outcome,points){
+  const r=record();
+  if(!r||r.closed)return;
+
+  stopClock();
+  r.closed=true;
+  r.outcome=outcome;
+  r.points=points;
+  selectedSource=null;
+
+  save();
+  render();
+
+  if(outcome==="correct"){
+    const praise=[
+      "Жарайсыңдар!",
+      "Тамаша сәйкестік!",
+      "Нағыз тапқырлар!",
+      "Сейф ашылды!",
+      "Керемет білім!"
+    ];
+
+    message(
+      praise[Math.floor(Math.random()*praise.length)]+" "+
+      NAMES[r.owner]+" командасына +"+points+" ұпай!",
+      true
+    );
+
+    [523,659,784].forEach((f,i)=>tone(f,.5,i*.13));
+  }else{
+    message(
+      outcome==="timeout"
+        ?"Уақыт аяқталды. Ұпай қосылмады."
+        :outcome==="skipped"
+          ?"Тапсырма өткізілді. Ұпай қосылмады."
+          :"Сәйкестікте қате бар. Ұпай қосылмады. Дұрыс жұптарды салыстырыңыз."
+    );
+    tone(260,.25);
+  }
+}
+
+$("start").onclick=startTimer;
+
+$("pause").onclick=()=>{
+  if(!clock)return;
+
+  snapshot();
+  stopClock();
+
+  if(record().remaining<=0){
+    finishTask("timeout",0);
+    return;
+  }
+
+  save();
+  controls();
+  message("Уақыт кідіртілді. Жалғастыру батырмасын басыңыз.");
+};
+
+document.querySelectorAll("[data-claim]").forEach(button=>{
+  button.onclick=()=>{
+    const r=record();
+    if(!r||r.closed||r.owner!==null||!clock)return;
+
+    snapshot();
+    if(r.remaining<=0){
+      finishTask("timeout",0);
+      return;
+    }
+
+    r.owner=Number(button.dataset.claim);
+    save();
+    controls();
+    updateTurn();
+
+    message(NAMES[r.owner]+": тақтадағы үш жұпты сәйкестендіріңіз!");
+  };
+});
+
+$("check").onclick=()=>{
+  const r=record();
+  if(!r||r.closed||!clock||r.owner===null)return;
+
+  snapshot();
+
+  if(r.remaining<=0){
+    finishTask("timeout",0);
+    return;
+  }
+
+  if(r.pairs.some(value=>value===null)){
+    message("Үш жұпты да толтырыңыз. Уақыт жүріп жатыр.");
+    return;
+  }
+
+  const correct=r.pairs.every((target,source)=>target===source);
+  finishTask(
+    correct?"correct":"wrong",
+    correct?pointsFor(r.remaining):0
+  );
+};
+
+$("skip").onclick=()=>{
+  const r=record();
+  if(!r||r.closed)return;
+
+  snapshot();
+  stopClock();
+  controls();
+
+  if(!confirm("Тапсырманы ұпай бермей өткіземіз бе?")){
+    save();
+    message("Уақыт кідіртілді. Жалғастыруға болады.");
+    return;
+  }
+
+  finishTask("skipped",0);
+};
+
+$("back").onclick=()=>{
+  if(!record()?.closed)return;
+
+  state.active=null;
+  selectedSource=null;
+  save();
+  render();
+
+  const finished=finishedCount();
+
+  if(finished===20){
+    message("II тур аяқталды! Барлық ұпай жалпы есепке енгізілді.",true);
+    openResults();
+  }else if(finished%5===0){
+    message("ӨКІЛДЕРДІ АУЫСТЫРЫҢЫЗДАР! Әр топтан келесі оқушы тақтаға шықсын.");
+  }else if(ordinaryCount()===18){
+    message("Кезектескен тапсырмалар аяқталды. 19 немесе 20-ұяшықты таңдаңыз — ортақ жарыс!");
+  }else{
+    message(NAMES[ordinaryCount()%3]+": келесі жабық ұяшықты таңдаңыз.");
+  }
+};
+
+function openResults(){
+  if(clock){
+    snapshot();
+    stopClock();
+    save();
+    controls();
+  }
+
+  const scores=allScores();
+
+  $("resultsTitle").textContent=finishedCount()===20
+    ?"II турдың қорытындысы"
+    :"Жалпы ұпай кестесі";
+
+  $("resultsBody").replaceChildren();
+
+  NAMES.forEach((name,team)=>{
+    const row=document.createElement("tr");
+    const values=[
+      name,
+      ...scores.map(s=>s[team]),
+      scores.reduce((sum,s)=>sum+s[team],0)
+    ];
+
+    values.forEach(value=>{
+      const cell=document.createElement("td");
+      cell.textContent=value;
+      row.appendChild(cell);
+    });
+
+    $("resultsBody").appendChild(row);
+  });
+
+  $("resultsDialog").showModal();
+}
+
+$("results").onclick=openResults;
+$("closeResults").onclick=()=>$("resultsDialog").close();
+
+$("reset").onclick=()=>{
+  if(!confirm("Тек II турдың нәтижесін тазалап, қайта бастаймыз ба?"))return;
+
+  stopClock();
+  state=fresh();
+  selectedSource=null;
+  save();
+  render();
+
+  message("Жаңа сейф дайын! Импульс командасы ұяшық таңдасын.");
+};
+
+$("sound").onclick=async()=>{
+  soundEnabled=!soundEnabled;
+  $("sound").textContent="♫ Дыбыс: "+(soundEnabled?"қосулы":"өшірулі");
+  $("sound").setAttribute("aria-pressed",String(soundEnabled));
+
+  if(soundEnabled){
+    await unlock();
+    tone(660,.3);
+  }
+};
+
+$("fullscreen").onclick=async()=>{
+  try{
+    if(document.fullscreenElement)await document.exitFullscreen();
+    else await document.documentElement.requestFullscreen();
+  }catch(error){
+    message("Толық экранды браузер мәзірінен қосыңыз.");
+  }
+};
+
+document.addEventListener("visibilitychange",()=>{
+  if(!document.hidden||!clock)return;
+  snapshot();
+  stopClock();
+  save();
+  controls();
+  message("Бет жасырылғандықтан таймер кідіртілді.");
+});
+
+window.addEventListener("pagehide",()=>{
+  snapshot();
+  stopClock();
+  save();
+});
+
+render();
+
+message(
+  finishedCount()===20
+    ?"II тур аяқталған. Нәтижелер сақталған."
+    :state.active!==null
+      ?record().closed
+        ?"Тапсырма аяқталған. Ұяшықтарға оралыңыз."
+        :"Тапсырма сақталған. Таймерді жалғастыра аласыз."
+      :"Импульс командасының өкілі жабық ұяшықты таңдасын."
+);
+</script>
+</body>
+</html>
