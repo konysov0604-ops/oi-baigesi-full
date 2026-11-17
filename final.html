@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="kk" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="google" content="notranslate">
+<title>Ой бәйгесі — Жеңіс салтанаты</title>
+<style>
+*{box-sizing:border-box}
+:root{--gold:#ffdc91}
+body{
+  margin:0;min-height:100vh;
+  font-family:"Segoe UI",Arial,sans-serif;color:#fff3d5;
+  background:
+    radial-gradient(ellipse at 50% 20%,#d9a63822,transparent 60%),
+    linear-gradient(#04102488,#041024ee),
+    url("stage.png") center/cover fixed;
+  background-color:#06152c
+}
+main{width:min(1150px,94%);margin:auto;padding:25px 0 45px}
+header,.actions{
+  display:flex;align-items:center;justify-content:center;
+  gap:12px;flex-wrap:wrap
+}
+header{justify-content:space-between}
+a{color:var(--gold)}
+.brand{text-decoration:none;font-weight:900;letter-spacing:2px}
+button{
+  padding:14px 22px;border:1px solid #c9a363;border-radius:13px;
+  background:#102541;color:#ffe5b7;font:inherit;
+  font-weight:700;cursor:pointer;touch-action:manipulation
+}
+button:disabled{opacity:.4;cursor:default}
+button:focus-visible,a:focus-visible{
+  outline:3px solid white;outline-offset:4px
+}
+.primary{
+  background:linear-gradient(135deg,#fff0bd,#dfa039);
+  color:#40280e;border-color:#ffe6ac
+}
+.hero{text-align:center;padding:30px 0 12px}
+.eyebrow{letter-spacing:4px;color:#d7c29c;font-size:13px}
+h1{
+  color:var(--gold);font-family:Georgia,serif;
+  font-size:clamp(32px,5.5vw,66px);margin:15px 0
+}
+.cup{
+  font-size:95px;line-height:1.3;
+  filter:drop-shadow(0 0 28px #ffc34a66)
+}
+#announcement{
+  min-height:85px;display:grid;place-items:center;
+  font-size:clamp(21px,3vw,35px);font-weight:800;
+  color:#ffe4a5;line-height:1.6
+}
+.subtitle{color:#c9c6bd;line-height:1.8}
+.podium{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:18px;align-items:end;margin:35px 0
+}
+.winner{
+  --accent:#ffdb83;
+  min-height:245px;text-align:center;padding:28px 16px;
+  border:1px solid #b29360;border-radius:22px;
+  background:linear-gradient(150deg,#172e4bf5,#07162bf5);
+  position:relative;overflow:hidden
+}
+.winner.first{min-height:300px}
+.winner.second{min-height:270px}
+.winner.revealed{
+  border-color:var(--accent);
+  box-shadow:0 0 30px color-mix(in srgb,var(--accent) 20%,transparent);
+  animation:reveal .65s ease-out both
+}
+.winner .medal{font-size:48px}
+.winner h2{font-size:25px;color:var(--accent);margin:15px 0}
+.winner .place{font-size:17px;letter-spacing:2px}
+.winner .score{font-size:35px;font-weight:900;margin:18px 0 0}
+.lock{font-size:47px;margin:15px 0}
+.mystery{color:#bcc5cd;line-height:1.9}
+.panel{
+  padding:24px;border:1px solid #a78b59;border-radius:20px;
+  background:#0a1d35f5;margin-top:28px
+}
+.panel h2{text-align:center;color:var(--gold)}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;margin:20px 0}
+th,td{
+  border:1px solid #a68b5d66;padding:14px 10px;
+  text-align:center;white-space:nowrap
+}
+th{background:#19334e;color:#ffe0a3}
+.notice{
+  margin:20px 0;padding:16px;border:1px solid #c49f6266;
+  border-radius:12px;background:#132943;line-height:1.9;text-align:center
+}
+.notice a{display:inline-block;margin:3px 8px}
+.diplomas{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:17px;margin:25px 0
+}
+.diploma{
+  position:relative;overflow:hidden;min-height:420px;
+  padding:28px 17px;border:8px double #b98d38;
+  background:radial-gradient(ellipse at top,#fffef7,#f1dfb4);
+  color:#3b2b13;text-align:center
+}
+.diploma::before{
+  content:"✦";position:absolute;left:50%;top:70px;
+  transform:translateX(-50%);font-size:240px;color:#b7892512
+}
+.diploma>*{position:relative}
+.diploma h3{
+  font-family:Georgia,serif;color:#885d1b;
+  font-size:30px;letter-spacing:3px;margin:15px 0
+}
+.diploma h4{font-size:24px;margin:20px 0}
+.diploma p{font-size:13px;line-height:1.9}
+.diploma b{display:block;font-size:35px;color:#885d1b}
+.diploma .sum{font-size:24px;font-weight:900;margin:14px 0}
+.diploma small{display:block;margin-top:24px}
+footer{text-align:center;color:#c9bb9f;margin-top:30px;line-height:1.9}
+canvas{
+  position:fixed;inset:0;width:100%;height:100%;
+  pointer-events:none;z-index:20
+}
+[hidden]{display:none!important}
+@keyframes reveal{
+  from{opacity:0;transform:translateY(30px) scale(.94)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+@media(max-width:700px){
+  header{justify-content:center}
+  .podium{gap:8px}
+  .winner{padding:20px 7px;min-height:220px}
+  .winner.first{min-height:260px}
+  .winner.second{min-height:240px}
+  .winner h2{font-size:15px}
+  .winner .score{font-size:24px}
+  .winner .place{font-size:12px}
+  .diplomas{grid-template-columns:1fr}
+  .panel{padding:15px}
+}
+@media(prefers-reduced-motion:reduce){
+  .winner.revealed{animation:none}
+}
+@media print{
+  @page{size:A4 landscape;margin:10mm}
+  body{background:white;color:black}
+  .no-print,canvas{display:none!important}
+  main{width:100%;padding:0}
+  #diplomaSection{
+    display:block!important;border:0;margin:0;padding:0;background:white
+  }
+  .diplomas{display:block;margin:0}
+  .diploma{
+    padding:20mm;min-height:180mm;
+    break-after:page;page-break-after:always;
+    print-color-adjust:exact;-webkit-print-color-adjust:exact
+  }
+  .diploma:last-child{break-after:auto;page-break-after:auto}
+  .diploma h3{font-size:55px}
+  .diploma h4{font-size:38px}
+  .diploma p{font-size:20px}
+  .diploma b{font-size:50px}
+  .diploma .sum{font-size:30px}
+}
+</style>
+</head>
+<body>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<main>
+  <header class="no-print">
+    <a class="brand" href="index.html">ОЙ БӘЙГЕСІ</a>
+    <div class="actions">
+      <button id="sound" aria-pressed="false">♫ Дыбыс өшірулі</button>
+      <button id="fullscreen" aria-label="Толық экран">⛶</button>
+    </div>
+  </header>
+
+  <section class="hero no-print">
+    <p class="eyebrow">БІЛІМ · БІРЛІК · ЖЕҢІС</p>
+    <div class="cup" aria-hidden="true">🏆</div>
+    <h1>ЖЕҢІС САЛТАНАТЫ</h1>
+    <p class="subtitle">Бес тур. Үш команда. Ұмытылмас сайыс!</p>
+    <div id="announcement" role="status" aria-live="polite">
+      Нәтижелер тексерілуде…
+    </div>
+    <div class="notice" id="notice"></div>
+
+    <div class="actions">
+      <button class="primary" id="announce" disabled>
+        Жеңімпаздарды жариялау
+      </button>
+      <button id="refresh">Нәтижені жаңарту</button>
+    </div>
+  </section>
+
+  <section class="podium no-print" aria-label="Командалар тұғыры">
+    <article class="winner second" id="card1"></article>
+    <article class="winner first" id="card0"></article>
+    <article class="winner" id="card2"></article>
+  </section>
+
+  <section class="panel no-print" id="scoreSection" hidden>
+    <h2>БЕС ТУРДЫҢ ҚОРЫТЫНДЫСЫ</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Орын</th><th>Команда</th>
+            <th>I</th><th>II</th><th>III</th><th>IV</th><th>V</th>
+            <th>Барлығы</th>
+          </tr>
+        </thead>
+        <tbody id="scores"></tbody>
+      </table>
+    </div>
+    <div class="actions">
+      <button class="primary" id="showDiplomas">Дипломдарды ашу</button>
+    </div>
+  </section>
+
+  <section class="panel" id="diplomaSection" hidden>
+    <h2 class="no-print">МАРАПАТТАУ ДИПЛОМДАРЫ</h2>
+    <div class="actions no-print">
+      <button class="primary" id="print">
+        Басып шығару / PDF сақтау
+      </button>
+    </div>
+    <div class="diplomas" id="diplomas"></div>
+  </section>
+
+  <footer class="no-print">
+    <a href="round5.html">← V турға оралу</a>
+    <p>Барша қатысушыға алғыс! Білімге құштарлықтарың арта берсін!</p>
+  </footer>
+</main>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+const KEY="oi-baigesi-full-results-v1";
+const NAMES=["ИМПУЛЬС","КВАНТ","НОВА"];
+const COLORS=["#ffdb83","#85eaff","#d7a3ff"];
+const ROMAN=["I","II","III","IV","V"];
+
+let ranking=[];
+let places=[];
+let step=0;
+let ready=false;
+let soundEnabled=false;
+let audioContext;
+
+function add(parent,tag,text,className=""){
+  const element=document.createElement(tag);
+  element.textContent=text;
+  if(className)element.className=className;
+  parent.appendChild(element);
+  return element;
+}
+
+function mysteryCards(){
+  for(let index=0;index<3;index++){
+    const card=$("card"+index);
+    card.replaceChildren();
+    card.classList.remove("revealed");
+    add(card,"div","✦","lock");
+    add(card,"h2","ҚҰПИЯ КОМАНДА");
+    add(card,"p","Нәтиже салтанатты түрде ашылады","mystery");
+  }
+}
+
+function load(){
+  stopConfetti();
+  ready=false;
+  step=0;
+  ranking=[];
+  places=[];
+
+  mysteryCards();
+  $("scores").replaceChildren();
+  $("diplomas").replaceChildren();
+  $("scoreSection").hidden=true;
+  $("diplomaSection").hidden=true;
+  $("announce").disabled=true;
+  $("announce").textContent="Жеңімпаздарды жариялау";
+  $("notice").replaceChildren();
+
+  let data;
+  try{
+    data=JSON.parse(localStorage.getItem(KEY));
+  }catch(error){}
+
+  const missing=[];
+  const rows=[];
+
+  for(let round=1;round<=5;round++){
+    const record=data?.rounds?.["round"+round];
+    const valid=data?.version===1&&record&&
+      record.completed===true&&
+      Array.isArray(record.scores)&&record.scores.length===3&&
+      record.scores.every(n=>Number.isFinite(n)&&n>=0);
+
+    if(!valid)missing.push(round);
+    rows.push(valid?[...record.scores]:[0,0,0]);
+  }
+
+  if(missing.length){
+    $("announcement").textContent="Алдымен бес турды аяқтайық!";
+    add(
+      $("notice"),"div",
+      "Аяқталған нәтижесі табылмаған турлар: "+
+      missing.map(n=>ROMAN[n-1]).join(", ")+
+      ". Сол турлардың соңындағы аяқтау батырмасын басыңыз."
+    );
+
+    missing.forEach(round=>{
+      const link=add($("notice"),"a",ROMAN[round-1]+" турға өту");
+      link.href="round"+round+".html";
+    });
+
+    add(
+      $("notice"),"div",
+      "Барлық турды ойнаған браузер мен құрылғыны қолданыңыз."
+    );
+    return;
+  }
+
+  const totals=NAMES.map((_,team)=>
+    rows.reduce((sum,row)=>sum+row[team],0)
+  );
+
+  ranking=NAMES.map((name,team)=>({
+    name,team,total:totals[team],
+    rounds:rows.map(row=>row[team]),
+    place:1+totals.filter(total=>total>totals[team]).length
+  })).sort((a,b)=>b.total-a.total||a.team-b.team);
+
+  places=[...new Set(ranking.map(entry=>entry.place))]
+    .sort((a,b)=>b-a);
+
+  ranking.forEach(entry=>{
+    const row=document.createElement("tr");
+
+    [
+      entry.place,entry.name,...entry.rounds,entry.total
+    ].forEach(value=>add(row,"td",value));
+
+    $("scores").appendChild(row);
+    buildDiploma(entry);
+  });
+
+  ready=true;
+  $("announce").disabled=false;
+  $("announcement").textContent="Командалар, салтанатты сәтке дайынсыздар ма?";
+  $("notice").textContent=
+    "Бес турдың нәтижесі дайын. Әр басқанда келесі орын ашылады. "+
+    "Ұпайлары тең командалар бірдей орын алады.";
+}
+
+function reveal(entry,index){
+  const card=$("card"+index);
+  card.replaceChildren();
+  card.style.setProperty("--accent",COLORS[entry.team]);
+
+  add(card,"div",
+    entry.place===1?"🏆":entry.place===2?"🥈":"🥉","medal");
+  add(card,"div",entry.place+"-ОРЫН","place");
+  add(card,"h2",entry.name);
+  add(card,"div",entry.total+" ұпай","score");
+
+  card.classList.add("revealed");
+}
+
+function buildDiploma(entry){
+  const diploma=document.createElement("article");
+  diploma.className="diploma";
+
+  add(diploma,"p","ОЙ БӘЙГЕСІ");
+  add(diploma,"h3","ДИПЛОМ");
+  add(diploma,"p","Интеллектуалды сайыс");
+  add(diploma,"h4","«"+entry.name+"» командасы");
+  add(
+    diploma,"p",
+    "Білімін, тапқырлығын және командалық бірлігін көрсетіп,"
+  );
+  add(diploma,"b",entry.place+"-ОРЫН");
+  add(diploma,"p","иеленгені үшін марапатталады.");
+  add(diploma,"div",entry.total+" ұпай","sum");
+  add(
+    diploma,"p",
+    entry.rounds.map((score,index)=>
+      ROMAN[index]+" тур: "+score
+    ).join(" · ")
+  );
+  add(diploma,"small","5–7-сыныптар · Білім • Бірлік • Жеңіс");
+
+  $("diplomas").appendChild(diploma);
+}
+
+function playFanfare(winner=false){
+  if(!soundEnabled||!audioContext||
+    audioContext.state!=="running")return;
+
+  const notes=winner
+    ?[523,659,784,1047,784,1047]
+    :[392,523,659,784];
+
+  notes.forEach((frequency,index)=>{
+    const at=audioContext.currentTime+index*.17;
+    const oscillator=audioContext.createOscillator();
+    const gain=audioContext.createGain();
+
+    oscillator.frequency.value=frequency;
+    gain.gain.setValueAtTime(0,at);
+    gain.gain.linearRampToValueAtTime(.045,at+.02);
+    gain.gain.exponentialRampToValueAtTime(.0001,at+.55);
+
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+    oscillator.start(at);
+    oscillator.stop(at+.6);
+
+    oscillator.onended=()=>{
+      oscillator.disconnect();
+      gain.disconnect();
+    };
+  });
+}
+
+$("announce").onclick=()=>{
+  if(!ready||step>=places.length)return;
+
+  const place=places[step];
+  const winners=ranking.filter(entry=>entry.place===place);
+
+  ranking.forEach((entry,index)=>{
+    if(entry.place===place)reveal(entry,index);
+  });
+
+  $("announcement").textContent=
+    place+"-орын — "+winners.map(entry=>entry.name).join(" және ")+
+    "! Құттықтаймыз!";
+
+  playFanfare(place===1);
+  launchConfetti(place===1);
+  step++;
+
+  if(step===places.length){
+    $("announce").disabled=true;
+    $("announce").textContent="Барлық жеңімпаз жарияланды";
+    $("scoreSection").hidden=false;
+    $("diplomaSection").hidden=false;
+    $("notice").textContent=
+      "Марапаттау дипломдары төменде дайын. "+
+      "Әр диплом жеке параққа басылады.";
+  }else{
+    $("announce").textContent=
+      places[step]===1
+        ?"🏆 Бас жеңімпазды жариялау"
+        :places[step]+"-орынды жариялау";
+  }
+};
+
+$("showDiplomas").onclick=()=>{
+  $("diplomaSection").hidden=false;
+  $("diplomaSection").scrollIntoView({
+    behavior:matchMedia("(prefers-reduced-motion: reduce)").matches
+      ?"auto":"smooth"
+  });
+};
+
+$("print").onclick=()=>window.print();
+$("refresh").onclick=load;
+
+$("sound").onclick=async()=>{
+  soundEnabled=!soundEnabled;
+
+  if(soundEnabled){
+    try{
+      const Audio=window.AudioContext||window.webkitAudioContext;
+      if(!Audio)throw new Error("audio");
+      if(!audioContext)audioContext=new Audio();
+      await audioContext.resume();
+      if(audioContext.state!=="running")throw new Error("audio");
+    }catch(error){
+      soundEnabled=false;
+      $("notice").textContent=
+        "Дыбыс қосылмады. Браузердің дыбыс рұқсатын тексеріңіз.";
+    }
+  }
+
+  $("sound").textContent="♫ Дыбыс "+(soundEnabled?"қосулы":"өшірулі");
+  $("sound").setAttribute("aria-pressed",String(soundEnabled));
+  if(soundEnabled)playFanfare();
+};
+
+$("fullscreen").onclick=async()=>{
+  try{
+    if(document.fullscreenElement)await document.exitFullscreen();
+    else await document.documentElement.requestFullscreen();
+  }catch(error){
+    $("notice").textContent=
+      "Толық экранды браузер мәзірінен қосуға болады.";
+  }
+};
+
+/* Конфетти */
+const canvas=$("confetti");
+const context=canvas.getContext("2d");
+let frame=0;
+let particles=[];
+let animationEnd=0;
+let lastTime=0;
+let width=0;
+let height=0;
+
+function resize(){
+  const ratio=Math.min(window.devicePixelRatio||1,2);
+  width=window.innerWidth;
+  height=window.innerHeight;
+  canvas.width=Math.round(width*ratio);
+  canvas.height=Math.round(height*ratio);
+  if(context)context.setTransform(ratio,0,0,ratio,0,0);
+}
+
+function stopConfetti(){
+  cancelAnimationFrame(frame);
+  frame=0;
+  particles=[];
+  if(context)context.clearRect(0,0,width,height);
+}
+
+function launchConfetti(big){
+  stopConfetti();
+
+  if(!context||document.hidden||
+    matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+
+  resize();
+  const colors=["#ffda80","#fff0c5","#78e6ff","#c7a0ff","#ffb685"];
+
+  particles=Array.from({length:big?180:90},()=>({
+    x:Math.random()*width,
+    y:-30-Math.random()*height*.7,
+    vx:(Math.random()-.5)*100,
+    vy:90+Math.random()*140,
+    size:5+Math.random()*7,
+    angle:Math.random()*Math.PI,
+    spin:(Math.random()-.5)*6,
+    color:colors[Math.floor(Math.random()*colors.length)]
+  }));
+
+  lastTime=performance.now();
+  animationEnd=lastTime+6500;
+  frame=requestAnimationFrame(animate);
+}
+
+function animate(now){
+  const dt=Math.min((now-lastTime)/1000,.04);
+  lastTime=now;
+  context.clearRect(0,0,width,height);
+
+  particles.forEach(p=>{
+    p.x+=p.vx*dt;
+    p.y+=p.vy*dt;
+    p.angle+=p.spin*dt;
+
+    context.save();
+    context.translate(p.x,p.y);
+    context.rotate(p.angle);
+    context.fillStyle=p.color;
+    context.fillRect(-p.size/2,-p.size/2,p.size,p.size*.55);
+    context.restore();
+  });
+
+  particles=particles.filter(p=>p.y<height+30);
+
+  if(now<animationEnd&&particles.length){
+    frame=requestAnimationFrame(animate);
+  }else{
+    stopConfetti();
+  }
+}
+
+window.addEventListener("resize",resize);
+document.addEventListener("visibilitychange",()=>{
+  if(document.hidden)stopConfetti();
+});
+
+window.addEventListener("storage",event=>{
+  if(event.key===KEY||event.key===null){
+    load();
+    if(ready){
+      $("notice").textContent=
+        "Ұпайлар өзгерді. Нәтиже жаңартылды, жариялауды қайта бастаңыз.";
+    }
+  }
+});
+
+resize();
+load();
+</script>
+</body>
+</html>
