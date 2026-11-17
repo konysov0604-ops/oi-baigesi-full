@@ -1274,5 +1274,284 @@ message(
       :"Импульс командасының өкілі жабық ұяшықты таңдасын."
 );
 </script>
+  <script>
+(() => {
+  let loop = null;
+  let nodes = [];
+  let beat = 0;
+  let lastSecond = -1;
+
+  // Бұрынғы қысқа дыбыстарды жаңа сүйемелдеумен ауыстырамыз.
+  tone = function () {};
+
+  function stopAudio() {
+    clearInterval(loop);
+    loop = null;
+
+    nodes.forEach(node => {
+      try { node.stop(); } catch (error) {}
+    });
+
+    nodes = [];
+  }
+
+  function ready() {
+    return soundEnabled &&
+      audioContext &&
+      audioContext.state === "running" &&
+      !document.hidden;
+  }
+
+  function track(source, ...effects) {
+    nodes.push(source);
+
+    source.onended = () => {
+      source.disconnect();
+      effects.forEach(effect => effect.disconnect());
+      nodes = nodes.filter(node => node !== source);
+    };
+  }
+
+  // Қысқа электронды және металл үн.
+  function ping(
+    frequency,
+    duration = .18,
+    delay = 0,
+    volume = .025
+  ) {
+    if (!ready()) return;
+
+    const time = audioContext.currentTime + delay;
+    const source = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+
+    source.frequency.value = frequency;
+
+    gain.gain.setValueAtTime(0, time);
+    gain.gain.linearRampToValueAtTime(volume, time + .008);
+    gain.gain.exponentialRampToValueAtTime(
+      .0001, time + duration
+    );
+
+    source.connect(gain);
+    gain.connect(audioContext.destination);
+    track(source, gain);
+
+    source.start(time);
+    source.stop(time + duration + .03);
+  }
+
+  // Шертілген ішекке ұқсайтын дыбыс.
+  function pluck(
+    frequency,
+    delay = 0,
+    volume = .026
+  ) {
+    if (!ready()) return;
+
+    const rate = audioContext.sampleRate;
+    const duration = .8;
+    const size = Math.max(2, Math.round(rate / frequency));
+
+    const buffer = audioContext.createBuffer(
+      1, Math.ceil(rate * duration), rate
+    );
+
+    const data = buffer.getChannelData(0);
+    const string = new Float32Array(size);
+
+    for (let i = 0; i < size; i++) {
+      string[i] = Math.random() * 2 - 1;
+    }
+
+    for (let i = 0; i < data.length; i++) {
+      const index = i % size;
+      const value = string[index];
+
+      string[index] = .495 * (
+        value + string[(index + 1) % size]
+      );
+
+      data[i] = value;
+    }
+
+    const source = audioContext.createBufferSource();
+    const gain = audioContext.createGain();
+    const time = audioContext.currentTime + delay;
+
+    source.buffer = buffer;
+
+    gain.gain.setValueAtTime(volume, time);
+    gain.gain.exponentialRampToValueAtTime(
+      .0001, time + duration
+    );
+
+    source.connect(gain);
+    gain.connect(audioContext.destination);
+    track(source, gain);
+
+    source.start(time);
+    source.stop(time + duration + .03);
+  }
+
+  // Ұяшық ашылғандағы құлып үні.
+  function lockSound() {
+    stopAudio();
+
+    [620, 955, 1420].forEach((frequency, index) => {
+      ping(frequency, .13, index * .055, .018);
+    });
+
+    pluck(220, .16, .04);
+  }
+
+  // Таймер кезіндегі жұмсақ этноырғақ.
+  function background() {
+    stopAudio();
+
+    beat = 0;
+    lastSecond = -1;
+
+    const melody = [
+      220, 330, 293.66, 330,
+      246.94, 330, 293.66, 220
+    ];
+
+    function playBeat() {
+      const r = record();
+
+      if (
+        !clock || !r || r.closed ||
+        r.remaining <= 5 || !ready()
+      ) return;
+
+      pluck(melody[beat % melody.length], 0, .035);
+      pluck(beat % 2 ? 146.83 : 110, .09, .025);
+
+      if (beat % 2 === 0) {
+        ping(880, .045, .42, .008);
+      }
+
+      beat++;
+    }
+
+    playBeat();
+    loop = setInterval(playBeat, 950);
+  }
+
+  // Таймер тоқтаса, әуен де тоқтайды.
+  const oldStopClock = stopClock;
+
+  stopClock = function () {
+    oldStopClock();
+    stopAudio();
+  };
+
+  // Таймер басталғанда әуен қосылады.
+  const oldStartTimer = startTimer;
+
+  startTimer = function () {
+    const alreadyRunning = Boolean(clock);
+
+    oldStartTimer();
+
+    if (!alreadyRunning && clock) {
+      background();
+    }
+  };
+
+  $("start").onclick = startTimer;
+
+  // Сейф ұяшығын ашу дыбысы.
+  const oldOpenTask = openTask;
+
+  openTask = function (index) {
+    const previous = state.active;
+
+    oldOpenTask(index);
+
+    if (previous === null && state.active === index) {
+      lockSound();
+    }
+  };
+
+  // Тапсырманың нәтижесіне арналған дыбыстар.
+  const oldFinishTask = finishTask;
+
+  finishTask = function (outcome, points) {
+    const wasOpen = record() && !record().closed;
+
+    oldFinishTask(outcome, points);
+
+    if (!wasOpen || !record()?.closed) return;
+
+    stopAudio();
+
+    if (outcome === "correct") {
+      // Сейф ашылды: шертілген жеңіс әуені.
+      [330, 440, 587.33, 660].forEach((frequency, index) => {
+        pluck(frequency, index * .1, .07);
+      });
+
+      [990, 1320].forEach((frequency, index) => {
+        ping(frequency, .35, .38 + index * .12, .02);
+      });
+
+    } else if (outcome === "timeout") {
+      ping(440, .18, 0, .03);
+      ping(330, .3, .18, .025);
+
+    } else if (outcome === "wrong") {
+      // Қате жауапқа жұмсақ төмендейтін үн.
+      pluck(146.83, 0, .055);
+      pluck(110, .14, .05);
+    }
+  };
+
+  // Соңғы 5 секундта тек уақыт белгісі қалады.
+  const oldTick = tick;
+
+  tick = function () {
+    oldTick();
+
+    const r = record();
+
+    if (!clock || !r || r.closed) return;
+
+    const second = Math.ceil(r.remaining);
+
+    if (
+      second > 0 &&
+      second <= 5 &&
+      second !== lastSecond
+    ) {
+      stopAudio();
+      ping(760 + (5 - second) * 70, .1, 0, .025);
+    }
+
+    lastSecond = second;
+  };
+
+  // Қолданыстағы дыбыс батырмасы бәрін басқарады.
+  $("sound").addEventListener("click", () => {
+    if (!soundEnabled) {
+      stopAudio();
+    } else {
+      unlock().then(() => {
+        if (!soundEnabled) return;
+
+        if (clock) background();
+        else pluck(330, 0, .055);
+      });
+    }
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) stopAudio();
+  });
+
+  window.addEventListener("pagehide", stopAudio);
+})();
+</script>
 </body>
 </html>
